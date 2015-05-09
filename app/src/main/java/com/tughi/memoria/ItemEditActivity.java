@@ -22,6 +22,7 @@ public class ItemEditActivity extends AppCompatActivity implements LoaderManager
 
     private EditText problemEditText;
     private EditText solutionEditText;
+    private EditText notesEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class ItemEditActivity extends AppCompatActivity implements LoaderManager
         setContentView(R.layout.item_edit_activity);
         problemEditText = (EditText) findViewById(R.id.problem);
         solutionEditText = (EditText) findViewById(R.id.solution);
+        notesEditText = (EditText) findViewById(R.id.notes);
 
         if (itemUri != null) {
             getSupportLoaderManager().initLoader(0, null, this);
@@ -66,6 +68,7 @@ public class ItemEditActivity extends AppCompatActivity implements LoaderManager
         if (cursor.moveToFirst()) {
             problemEditText.setText(cursor.getString(cursor.getColumnIndex(Items.Columns.PROBLEM)));
             solutionEditText.setText(cursor.getString(cursor.getColumnIndex(Items.Columns.SOLUTION)));
+            notesEditText.setText(cursor.getString(cursor.getColumnIndex(Items.Columns.NOTES)));
 
             loader.abandon();
         }
@@ -90,6 +93,7 @@ public class ItemEditActivity extends AppCompatActivity implements LoaderManager
             values = new ContentValues();
             putValue(Items.Columns.PROBLEM, problemEditText);
             putValue(Items.Columns.SOLUTION, solutionEditText);
+            putValue(Items.Columns.NOTES, notesEditText);
         }
 
         private void putValue(String key, EditText editText) {

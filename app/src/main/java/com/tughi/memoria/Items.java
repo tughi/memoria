@@ -10,6 +10,9 @@ public class Items {
         String ID = "_id";
         String PROBLEM = "problem";
         String SOLUTION = "solution";
+        String NOTES = "notes";
+        String RATING = "rating";
+        String TESTED = "tested";
     }
 
 }

@@ -1,6 +1,10 @@
 package com.tughi.memoria;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class SolutionsPracticeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+public class SolutionPickerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
     private static final String[] ITEMS_PROJECTION = {
             Items.Columns.ID,
@@ -29,7 +33,6 @@ public class SolutionsPracticeFragment extends Fragment implements LoaderManager
 
     private boolean loaded;
 
-    private TextView problemTextView;
     private SolutionButton solution1Button;
     private SolutionButton solution2Button;
     private SolutionButton solution3Button;
@@ -41,7 +44,8 @@ public class SolutionsPracticeFragment extends Fragment implements LoaderManager
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.solutions_practice_fragment, container, false);
-        problemTextView = (TextView) view.findViewById(R.id.problem);
+        TextView problemTextView = (TextView) view.findViewById(R.id.problem);
+        problemTextView.setText(getArguments().getString(Items.Columns.PROBLEM));
 
         solution1Button = (SolutionButton) view.findViewById(R.id.solution_1);
         solution1Button.setOnClickListener(this);
@@ -51,7 +55,6 @@ public class SolutionsPracticeFragment extends Fragment implements LoaderManager
         solution3Button.setOnClickListener(this);
         solution4Button = (SolutionButton) view.findViewById(R.id.solution_4);
         solution4Button.setOnClickListener(this);
-
 
         return view;
     }
@@ -79,10 +82,6 @@ public class SolutionsPracticeFragment extends Fragment implements LoaderManager
 
             Random random = new Random();
 
-            int problemPosition = random.nextInt(count);
-            cursor.moveToPosition(problemPosition);
-            problemTextView.setText(cursor.getString(ITEM_PROBLEM));
-
             List<SolutionButton> solutionButtons = new LinkedList<>();
             solutionButtons.add(solution1Button);
             solutionButtons.add(solution2Button);
@@ -91,18 +90,18 @@ public class SolutionsPracticeFragment extends Fragment implements LoaderManager
 
             correctSolutionButton = solutionButtons.remove(random.nextInt(solutionButtons.size()));
             correctSolutionButton.setBackgroundResource(R.drawable.solution_correct);
-            correctSolutionButton.setText(cursor.getString(ITEM_SOLUTION));
+            correctSolutionButton.setText(getArguments().getString(Items.Columns.SOLUTION));
 
             while (!solutionButtons.isEmpty()) {
                 int wrongPosition = random.nextInt(count);
-                if (wrongPosition != problemPosition) {
-                    cursor.moveToPosition(wrongPosition);
-
+                if (cursor.moveToPosition(wrongPosition) && cursor.getLong(ITEM_ID) != getArguments().getLong(Items.Columns.ID)) {
                     SolutionButton solutionButton = solutionButtons.remove(random.nextInt(solutionButtons.size()));
                     solutionButton.setBackgroundResource(R.drawable.solution_wrong);
                     solutionButton.setText(cursor.getString(ITEM_SOLUTION));
                 }
             }
+
+            loaded = true;
         }
     }
 
@@ -113,17 +112,34 @@ public class SolutionsPracticeFragment extends Fragment implements LoaderManager
 
     @Override
     public void onClick(View view) {
-        boolean correct = view == correctSolutionButton;
+        final boolean correct = view == correctSolutionButton;
         if (!correct) {
             correctSolutionButton.setChecked(true);
         }
+
+        new AsyncTask<Object, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Object... params) {
+                Context context = (Context) params[0];
+                Bundle arguments = (Bundle) params[1];
+
+                long id = arguments.getLong(Items.Columns.ID);
+                int rating = arguments.getInt(Items.Columns.RATING);
+
+                ContentValues values = new ContentValues();
+                values.put(Items.Columns.RATING, correct ? Math.max(rating + 1, 5) : rating / 2);
+                values.put(Items.Columns.TESTED, System.currentTimeMillis());
+
+                return context.getContentResolver().update(ContentUris.withAppendedId(Items.CONTENT_URI, id), values, null, null) > 0;
+            }
+        }.execute(getActivity().getApplicationContext(), getArguments());
 
         solution1Button.setEnabled(false);
         solution2Button.setEnabled(false);
         solution3Button.setEnabled(false);
         solution4Button.setEnabled(false);
 
-        ((MainActivity) getActivity()).continuePractice(correct);
+        ((MainActivity) getActivity()).continuePractice(correct ? 500 : 1500);
     }
 
 }
