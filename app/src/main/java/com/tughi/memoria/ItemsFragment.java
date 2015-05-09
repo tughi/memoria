@@ -9,6 +9,9 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -32,7 +35,28 @@ public class ItemsFragment extends ListFragment implements LoaderManager.LoaderC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.items_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add:
+                startActivity(new Intent(getActivity(), ItemEditActivity.class));
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -84,7 +108,7 @@ public class ItemsFragment extends ListFragment implements LoaderManager.LoaderC
             if (cursor.moveToPosition(position)) {
                 return cursor;
             }
-            throw new IllegalStateException("Broken cursor state?");
+            throw new IllegalStateException("Could not move the cursor to position: " + position);
         }
 
         @Override
@@ -92,7 +116,7 @@ public class ItemsFragment extends ListFragment implements LoaderManager.LoaderC
             if (cursor.moveToPosition(position)) {
                 return cursor.getLong(ITEM_ID);
             }
-            throw new IllegalStateException("Broken cursor state?");
+            throw new IllegalStateException("Could not move the cursor to position: " + position);
         }
 
         @Override

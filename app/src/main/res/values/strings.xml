@@ -4,4 +4,6 @@
     <string name="problem">problem</string>
     <string name="solution">solution</string>
     <string name="done">done</string>
+    <string name="practice">Practice</string>
+    <string name="knowledge">Knowledge</string>
 </resources>
