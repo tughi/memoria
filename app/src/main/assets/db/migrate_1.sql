@@ -4,6 +4,6 @@ CREATE TABLE items (
     problem TEXT NOT NULL,
     solution TEXT NOT NULL,
     notes TEXT,
-    rating INTEGER NOT NULL DEFAULT 0,
+    rating INTEGER NOT NULL DEFAULT 1,
     tested INTEGER NOT NULL DEFAULT 0
 );

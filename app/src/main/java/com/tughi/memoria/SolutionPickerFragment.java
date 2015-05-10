@@ -1,13 +1,8 @@
 package com.tughi.memoria;
 
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -20,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class SolutionPickerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+public class SolutionPickerFragment extends PracticeFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
     private static final String[] ITEMS_PROJECTION = {
             Items.Columns.ID,
@@ -90,7 +85,8 @@ public class SolutionPickerFragment extends Fragment implements LoaderManager.Lo
 
             correctSolutionButton = solutionButtons.remove(random.nextInt(solutionButtons.size()));
             correctSolutionButton.setBackgroundResource(R.drawable.solution_correct);
-            correctSolutionButton.setText(getArguments().getString(Items.Columns.SOLUTION));
+            correctSolutionButton.setText(getItemSolution());
+            correctSolutionButton.setTag(getItemProblem());
 
             while (!solutionButtons.isEmpty()) {
                 int wrongPosition = random.nextInt(count);
@@ -98,6 +94,7 @@ public class SolutionPickerFragment extends Fragment implements LoaderManager.Lo
                     SolutionButton solutionButton = solutionButtons.remove(random.nextInt(solutionButtons.size()));
                     solutionButton.setBackgroundResource(R.drawable.solution_wrong);
                     solutionButton.setText(cursor.getString(ITEM_SOLUTION));
+                    solutionButton.setTag(cursor.getString(ITEM_PROBLEM));
                 }
             }
 
@@ -107,39 +104,22 @@ public class SolutionPickerFragment extends Fragment implements LoaderManager.Lo
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        // nothing to do
     }
 
     @Override
     public void onClick(View view) {
-        final boolean correct = view == correctSolutionButton;
+        final boolean correct = submitAnswer((String) view.getTag());
         if (!correct) {
             correctSolutionButton.setChecked(true);
         }
-
-        new AsyncTask<Object, Void, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Object... params) {
-                Context context = (Context) params[0];
-                Bundle arguments = (Bundle) params[1];
-
-                long id = arguments.getLong(Items.Columns.ID);
-                int rating = arguments.getInt(Items.Columns.RATING);
-
-                ContentValues values = new ContentValues();
-                values.put(Items.Columns.RATING, correct ? Math.max(rating + 1, 5) : rating / 2);
-                values.put(Items.Columns.TESTED, System.currentTimeMillis());
-
-                return context.getContentResolver().update(ContentUris.withAppendedId(Items.CONTENT_URI, id), values, null, null) > 0;
-            }
-        }.execute(getActivity().getApplicationContext(), getArguments());
 
         solution1Button.setEnabled(false);
         solution2Button.setEnabled(false);
         solution3Button.setEnabled(false);
         solution4Button.setEnabled(false);
 
-        ((MainActivity) getActivity()).continuePractice(correct ? 500 : 1500);
+        ((MainActivity) getActivity()).continuePractice(correct ? NEXT_PROBLEM_NORMAL : NEXT_PROBLEM_DELAYED);
     }
 
 }

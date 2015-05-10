@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         itemsCursor = cursor;
 
         if (getSupportFragmentManager().findFragmentById(R.id.content) == null) {
-            continuePractice(0);
+            continuePractice(PracticeFragment.NEXT_PROBLEM_IMMEDIATELY);
         }
     }
 
