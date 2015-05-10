@@ -28,27 +28,27 @@ public class SolutionPickerFragment extends PracticeFragment implements LoaderMa
 
     private boolean loaded;
 
-    private SolutionButton solution1Button;
-    private SolutionButton solution2Button;
-    private SolutionButton solution3Button;
-    private SolutionButton solution4Button;
+    private PickerButton solution1Button;
+    private PickerButton solution2Button;
+    private PickerButton solution3Button;
+    private PickerButton solution4Button;
 
-    private SolutionButton correctSolutionButton;
+    private PickerButton correctSolutionButton;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.solutions_practice_fragment, container, false);
+        View view = inflater.inflate(R.layout.solution_picker_fragment, container, false);
         TextView problemTextView = (TextView) view.findViewById(R.id.problem);
         problemTextView.setText(getArguments().getString(Items.Columns.PROBLEM));
 
-        solution1Button = (SolutionButton) view.findViewById(R.id.solution_1);
+        solution1Button = (PickerButton) view.findViewById(R.id.solution_1);
         solution1Button.setOnClickListener(this);
-        solution2Button = (SolutionButton) view.findViewById(R.id.solution_2);
+        solution2Button = (PickerButton) view.findViewById(R.id.solution_2);
         solution2Button.setOnClickListener(this);
-        solution3Button = (SolutionButton) view.findViewById(R.id.solution_3);
+        solution3Button = (PickerButton) view.findViewById(R.id.solution_3);
         solution3Button.setOnClickListener(this);
-        solution4Button = (SolutionButton) view.findViewById(R.id.solution_4);
+        solution4Button = (PickerButton) view.findViewById(R.id.solution_4);
         solution4Button.setOnClickListener(this);
 
         return view;
@@ -69,30 +69,25 @@ public class SolutionPickerFragment extends PracticeFragment implements LoaderMa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (!loaded) {
-            int count = cursor.getCount();
-            if (count == 0) {
-                // TODO: inform about empty database
-                return;
-            }
-
             Random random = new Random();
 
-            List<SolutionButton> solutionButtons = new LinkedList<>();
-            solutionButtons.add(solution1Button);
-            solutionButtons.add(solution2Button);
-            solutionButtons.add(solution3Button);
-            solutionButtons.add(solution4Button);
+            List<PickerButton> pickerButtons = new LinkedList<>();
+            pickerButtons.add(solution1Button);
+            pickerButtons.add(solution2Button);
+            pickerButtons.add(solution3Button);
+            pickerButtons.add(solution4Button);
 
-            correctSolutionButton = solutionButtons.remove(random.nextInt(solutionButtons.size()));
-            correctSolutionButton.setBackgroundResource(R.drawable.solution_correct);
+            correctSolutionButton = pickerButtons.remove(random.nextInt(pickerButtons.size()));
+            correctSolutionButton.setBackgroundResource(R.drawable.correct_picker_button);
             correctSolutionButton.setText(getItemSolution());
             correctSolutionButton.setTag(getItemProblem());
 
-            while (!solutionButtons.isEmpty()) {
+            int count = cursor.getCount();
+            while (!pickerButtons.isEmpty()) {
                 int wrongPosition = random.nextInt(count);
                 if (cursor.moveToPosition(wrongPosition) && cursor.getLong(ITEM_ID) != getArguments().getLong(Items.Columns.ID)) {
-                    SolutionButton solutionButton = solutionButtons.remove(random.nextInt(solutionButtons.size()));
-                    solutionButton.setBackgroundResource(R.drawable.solution_wrong);
+                    PickerButton solutionButton = pickerButtons.remove(random.nextInt(pickerButtons.size()));
+                    solutionButton.setBackgroundResource(R.drawable.wrong_picker_button);
                     solutionButton.setText(cursor.getString(ITEM_SOLUTION));
                     solutionButton.setTag(cursor.getString(ITEM_PROBLEM));
                 }

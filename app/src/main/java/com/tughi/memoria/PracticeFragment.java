@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.widget.Toast;
 
 public abstract class PracticeFragment extends Fragment {
 
@@ -35,6 +36,18 @@ public abstract class PracticeFragment extends Fragment {
         itemProblem = arguments.getString(Items.Columns.PROBLEM);
         itemSolution = arguments.getString(Items.Columns.SOLUTION);
         itemRating = arguments.getInt(Items.Columns.RATING);
+
+        if (BuildConfig.DEBUG) {
+            char[] stars = {
+                    itemRating >= 1 ? '★' : '☆',
+                    itemRating >= 2 ? '★' : '☆',
+                    itemRating >= 3 ? '★' : '☆',
+                    itemRating >= 4 ? '★' : '☆',
+                    itemRating >= 5 ? '★' : '☆',
+                    ' ', '(', (char) (itemRating + '0'), ')'
+            };
+            Toast.makeText(getActivity(), new String(stars), Toast.LENGTH_SHORT).show();
+        }
     }
 
     protected boolean submitAnswer(String answerProblem) {
@@ -46,7 +59,7 @@ public abstract class PracticeFragment extends Fragment {
                 Context context = (Context) params[0];
 
                 ContentValues values = new ContentValues();
-                values.put(Items.Columns.RATING, correct ? Math.max(itemRating + 1, 5) : Math.round(itemRating / 2.));
+                values.put(Items.Columns.RATING, correct ? itemRating + 1 : Math.round(Math.min(itemRating, 5) / 2.));
                 values.put(Items.Columns.TESTED, System.currentTimeMillis());
 
                 return context.getContentResolver().update(ContentUris.withAppendedId(Items.CONTENT_URI, itemId), values, null, null) > 0;

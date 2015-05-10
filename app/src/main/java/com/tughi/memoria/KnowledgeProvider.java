@@ -47,9 +47,6 @@ public class KnowledgeProvider extends ContentProvider {
 
     private Cursor queryItems(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = helper.getReadableDatabase();
-        if (sortOrder == null) {
-            sortOrder = Items.Columns.RATING + ", " + Items.Columns.TESTED;
-        }
         Cursor cursor = db.query(TABLE_ITEMS, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), Items.CONTENT_URI);
         return cursor;

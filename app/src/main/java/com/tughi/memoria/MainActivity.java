@@ -4,13 +4,14 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, Handler.Callback, LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Items.Columns.SOLUTION,
             Items.Columns.RATING,
     };
+    private static final String ITEMS_SORT_ORDER = Items.Columns.RATING + ", " + Items.Columns.TESTED;
     private static final int ITEM_ID = 0;
     private static final int ITEM_PROBLEM = 1;
     private static final int ITEM_SOLUTION = 2;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private View drawerView;
 
     private Handler practiceHandler;
+    private Random random = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,13 +77,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void replacePracticeFragment() {
         if (itemsCursor != null && itemsCursor.moveToFirst()) {
+            PracticeFragment practiceFragment;
+            int chance = random.nextInt(10);
+            if (chance < 4) {
+                practiceFragment = new SolutionPickerFragment();
+            } else {
+                practiceFragment = new ProblemPickerFragment();
+            }
+
             Bundle args = new Bundle();
             args.putLong(Items.Columns.ID, itemsCursor.getLong(ITEM_ID));
             args.putString(Items.Columns.PROBLEM, itemsCursor.getString(ITEM_PROBLEM));
             args.putString(Items.Columns.SOLUTION, itemsCursor.getString(ITEM_SOLUTION));
             args.putInt(Items.Columns.RATING, itemsCursor.getInt(ITEM_RATING));
-
-            Fragment practiceFragment = new SolutionPickerFragment();
             practiceFragment.setArguments(args);
 
             getSupportFragmentManager()
@@ -92,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, Items.CONTENT_URI, ITEMS_PROJECTION, null, null, null);
+        return new CursorLoader(this, Items.CONTENT_URI, ITEMS_PROJECTION, null, null, ITEMS_SORT_ORDER);
     }
 
     @Override
