@@ -60,11 +60,23 @@ public abstract class PracticeFragment extends Fragment {
         new AsyncTask<Object, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Object... params) {
-                Context context = (Context) params[0];
+                final Context context = (Context) params[0];
+
+                final int rating;
+                final long practiceTime;
+                if (correct) {
+                    rating = exerciseRating + 1;
+
+                    final long currentTime = System.currentTimeMillis() / 1000;
+                    practiceTime = currentTime + (int) Math.pow(3, rating);
+                } else {
+                    rating = Math.round(Math.min(exerciseRating, 5) / 2.f);
+                    practiceTime = 0;
+                }
 
                 ContentValues values = new ContentValues();
-                values.put(Exercises.COLUMN_RATING, correct ? exerciseRating + 1 : Math.round(Math.min(exerciseRating, 5) / 2.));
-                values.put(Exercises.COLUMN_PRACTICE_TIME, System.currentTimeMillis());
+                values.put(Exercises.COLUMN_RATING, rating);
+                values.put(Exercises.COLUMN_PRACTICE_TIME, practiceTime);
 
                 return context.getContentResolver().update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exerciseId), values, null, null) > 0;
             }

@@ -6,20 +6,37 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 import com.tughi.android.database.sqlite.DatabaseOpenHelper;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ExercisesProvider extends ContentProvider {
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
 
-    private static final String TABLE_ITEMS = "exercises";
+    private static final String TABLE_EXERCISES = "exercises";
 
     private static final int URI_EXERCISES = 0;
     private static final int URI_EXERCISE = 1;
 
     private UriMatcher uriMatcher;
+
+    private static final Map<String, String> EXERCISES_PROJECTION_MAP;
+
+    static {
+        Map<String, String> projection = EXERCISES_PROJECTION_MAP = new HashMap<>();
+        projection.put(Exercises.COLUMN_ID, Exercises.COLUMN_ID);
+        projection.put(Exercises.COLUMN_SCOPE, Exercises.COLUMN_SCOPE);
+        projection.put(Exercises.COLUMN_DEFINITION, Exercises.COLUMN_DEFINITION);
+        projection.put(Exercises.COLUMN_NOTES, Exercises.COLUMN_NOTES);
+        projection.put(Exercises.COLUMN_PRACTICE_TIME, Exercises.COLUMN_PRACTICE_TIME);
+        projection.put(Exercises.COLUMN_RATING, Exercises.COLUMN_RATING);
+        projection.put(Exercises.COLUMN_NEW, "(" + Exercises.COLUMN_RATING + " = 0) AS " + Exercises.COLUMN_NEW);
+    }
 
     private DatabaseOpenHelper helper;
 
@@ -47,7 +64,12 @@ public class ExercisesProvider extends ContentProvider {
 
     private Cursor queryExercises(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_ITEMS, projection, selection, selectionArgs, null, null, sortOrder);
+
+        SQLiteQueryBuilder query = new SQLiteQueryBuilder();
+        query.setTables(TABLE_EXERCISES);
+        query.setProjectionMap(EXERCISES_PROJECTION_MAP);
+
+        Cursor cursor = query.query(db, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), Exercises.CONTENT_URI);
         return cursor;
     }
@@ -63,7 +85,7 @@ public class ExercisesProvider extends ContentProvider {
 
     private Uri insertExercise(ContentValues values) {
         SQLiteDatabase db = helper.getWritableDatabase();
-        long id = db.insertOrThrow(TABLE_ITEMS, null, values);
+        long id = db.insertOrThrow(TABLE_EXERCISES, null, values);
         Uri uri = ContentUris.withAppendedId(Exercises.CONTENT_URI, id);
         getContext().getContentResolver().notifyChange(uri, null);
         return uri;
@@ -80,7 +102,7 @@ public class ExercisesProvider extends ContentProvider {
 
     private int updateExercises(ContentValues values, String selection, String[] selectionArgs) {
         SQLiteDatabase db = helper.getWritableDatabase();
-        int count = db.update(TABLE_ITEMS, values, selection, selectionArgs);
+        int count = db.update(TABLE_EXERCISES, values, selection, selectionArgs);
         if (count > 0) {
             getContext().getContentResolver().notifyChange(Exercises.CONTENT_URI, null);
         }

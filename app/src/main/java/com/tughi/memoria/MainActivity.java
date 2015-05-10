@@ -20,8 +20,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Exercises.COLUMN_SCOPE,
             Exercises.COLUMN_DEFINITION,
             Exercises.COLUMN_RATING,
+            Exercises.COLUMN_NEW,
     };
-    private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_RATING + ", " + Exercises.COLUMN_PRACTICE_TIME;
+    private static final String EXERCISES_SELECTION = Exercises.COLUMN_PRACTICE_TIME + " < CAST(STRFTIME('%s', 'now') AS INTEGER)";
+    private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_NEW + ", " + Exercises.COLUMN_PRACTICE_TIME;
     private static final int EXERCISE_ID = 0;
     private static final int EXERCISE_SCOPE = 1;
     private static final int EXERCISE_DEFINITION = 2;
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, Exercises.CONTENT_URI, EXERCISES_PROJECTION, null, null, EXERCISES_SORT_ORDER);
+        return new CursorLoader(this, Exercises.CONTENT_URI, EXERCISES_PROJECTION, EXERCISES_SELECTION, null, EXERCISES_SORT_ORDER);
     }
 
     @Override
