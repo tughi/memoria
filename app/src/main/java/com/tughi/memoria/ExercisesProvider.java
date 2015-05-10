@@ -10,14 +10,14 @@ import android.net.Uri;
 
 import com.tughi.android.database.sqlite.DatabaseOpenHelper;
 
-public class KnowledgeProvider extends ContentProvider {
+public class ExercisesProvider extends ContentProvider {
 
-    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".knowledge";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
 
-    private static final String TABLE_ITEMS = "items";
+    private static final String TABLE_ITEMS = "exercises";
 
-    private static final int URI_ITEMS = 0;
-    private static final int URI_ITEM = 1;
+    private static final int URI_EXERCISES = 0;
+    private static final int URI_EXERCISE = 1;
 
     private UriMatcher uriMatcher;
 
@@ -26,10 +26,10 @@ public class KnowledgeProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(AUTHORITY, "items", URI_ITEMS);
-        uriMatcher.addURI(AUTHORITY, "items/#", URI_ITEM);
+        uriMatcher.addURI(AUTHORITY, "exercises", URI_EXERCISES);
+        uriMatcher.addURI(AUTHORITY, "exercises/#", URI_EXERCISE);
 
-        helper = new DatabaseOpenHelper(getContext(), "items.db", 1);
+        helper = new DatabaseOpenHelper(getContext(), "exercises.db", 1);
 
         return true;
     }
@@ -37,34 +37,34 @@ public class KnowledgeProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         switch (uriMatcher.match(uri)) {
-            case URI_ITEM:
-                selection = AND(Items.Columns.ID + " = " + uri.getLastPathSegment(), selection);
-            case URI_ITEMS:
-                return queryItems(projection, selection, selectionArgs, sortOrder);
+            case URI_EXERCISE:
+                selection = AND(Exercises.COLUMN_ID + " = " + uri.getLastPathSegment(), selection);
+            case URI_EXERCISES:
+                return queryExercises(projection, selection, selectionArgs, sortOrder);
         }
         throw new UnsupportedOperationException("Not supported: " + uri);
     }
 
-    private Cursor queryItems(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    private Cursor queryExercises(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query(TABLE_ITEMS, projection, selection, selectionArgs, null, null, sortOrder);
-        cursor.setNotificationUri(getContext().getContentResolver(), Items.CONTENT_URI);
+        cursor.setNotificationUri(getContext().getContentResolver(), Exercises.CONTENT_URI);
         return cursor;
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         switch (uriMatcher.match(uri)) {
-            case URI_ITEMS:
-                return insertItem(values);
+            case URI_EXERCISES:
+                return insertExercise(values);
         }
         throw new UnsupportedOperationException("Not supported: " + uri);
     }
 
-    private Uri insertItem(ContentValues values) {
+    private Uri insertExercise(ContentValues values) {
         SQLiteDatabase db = helper.getWritableDatabase();
         long id = db.insertOrThrow(TABLE_ITEMS, null, values);
-        Uri uri = ContentUris.withAppendedId(Items.CONTENT_URI, id);
+        Uri uri = ContentUris.withAppendedId(Exercises.CONTENT_URI, id);
         getContext().getContentResolver().notifyChange(uri, null);
         return uri;
     }
@@ -72,17 +72,17 @@ public class KnowledgeProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         switch (uriMatcher.match(uri)) {
-            case URI_ITEM:
-                return updateWords(values, AND(Items.Columns.ID + " = " + uri.getLastPathSegment(), selection), selectionArgs);
+            case URI_EXERCISE:
+                return updateExercises(values, AND(Exercises.COLUMN_ID + " = " + uri.getLastPathSegment(), selection), selectionArgs);
         }
         throw new UnsupportedOperationException("Not supported: " + uri);
     }
 
-    private int updateWords(ContentValues values, String selection, String[] selectionArgs) {
+    private int updateExercises(ContentValues values, String selection, String[] selectionArgs) {
         SQLiteDatabase db = helper.getWritableDatabase();
         int count = db.update(TABLE_ITEMS, values, selection, selectionArgs);
         if (count > 0) {
-            getContext().getContentResolver().notifyChange(Items.CONTENT_URI, null);
+            getContext().getContentResolver().notifyChange(Exercises.CONTENT_URI, null);
         }
         return count;
     }

@@ -16,26 +16,26 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class ItemEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class EditExerciseActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private Uri itemUri;
+    private Uri exerciseUri;
 
-    private EditText problemEditText;
-    private EditText solutionEditText;
+    private EditText scopeEditText;
+    private EditText definitionEditText;
     private EditText notesEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        itemUri = getIntent().getData();
+        exerciseUri = getIntent().getData();
 
-        setContentView(R.layout.item_edit_activity);
-        problemEditText = (EditText) findViewById(R.id.problem);
-        solutionEditText = (EditText) findViewById(R.id.solution);
+        setContentView(R.layout.edit_exercise_activity);
+        scopeEditText = (EditText) findViewById(R.id.question);
+        definitionEditText = (EditText) findViewById(R.id.definition);
         notesEditText = (EditText) findViewById(R.id.notes);
 
-        if (itemUri != null) {
+        if (exerciseUri != null) {
             getSupportLoaderManager().initLoader(0, null, this);
         }
     }
@@ -43,7 +43,7 @@ public class ItemEditActivity extends AppCompatActivity implements LoaderManager
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.item_edit_activity, menu);
+        getMenuInflater().inflate(R.menu.edit_exercise_activity, menu);
         return true;
     }
 
@@ -51,7 +51,7 @@ public class ItemEditActivity extends AppCompatActivity implements LoaderManager
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.done:
-                new SaveItemTask().execute();
+                new SaveExerciseTask().execute();
                 return true;
         }
 
@@ -60,15 +60,15 @@ public class ItemEditActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, itemUri, null, null, null, null);
+        return new CursorLoader(this, exerciseUri, null, null, null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor.moveToFirst()) {
-            problemEditText.setText(cursor.getString(cursor.getColumnIndex(Items.Columns.PROBLEM)));
-            solutionEditText.setText(cursor.getString(cursor.getColumnIndex(Items.Columns.SOLUTION)));
-            notesEditText.setText(cursor.getString(cursor.getColumnIndex(Items.Columns.NOTES)));
+            scopeEditText.setText(cursor.getString(cursor.getColumnIndex(Exercises.COLUMN_SCOPE)));
+            definitionEditText.setText(cursor.getString(cursor.getColumnIndex(Exercises.COLUMN_DEFINITION)));
+            notesEditText.setText(cursor.getString(cursor.getColumnIndex(Exercises.COLUMN_NOTES)));
 
             loader.abandon();
         }
@@ -79,7 +79,7 @@ public class ItemEditActivity extends AppCompatActivity implements LoaderManager
         // nothing to do here
     }
 
-    private class SaveItemTask extends AsyncTask<Object, Void, Boolean> {
+    private class SaveExerciseTask extends AsyncTask<Object, Void, Boolean> {
 
         private Context context;
         private ContentValues values;
@@ -91,9 +91,9 @@ public class ItemEditActivity extends AppCompatActivity implements LoaderManager
             context = getApplicationContext();
 
             values = new ContentValues();
-            putValue(Items.Columns.PROBLEM, problemEditText);
-            putValue(Items.Columns.SOLUTION, solutionEditText);
-            putValue(Items.Columns.NOTES, notesEditText);
+            putValue(Exercises.COLUMN_SCOPE, scopeEditText);
+            putValue(Exercises.COLUMN_DEFINITION, definitionEditText);
+            putValue(Exercises.COLUMN_NOTES, notesEditText);
         }
 
         private void putValue(String key, EditText editText) {
@@ -109,9 +109,9 @@ public class ItemEditActivity extends AppCompatActivity implements LoaderManager
         protected Boolean doInBackground(Object... params) {
             try {
                 ContentResolver contentResolver = context.getContentResolver();
-                Uri uri = itemUri;
+                Uri uri = exerciseUri;
                 if (uri == null) {
-                    uri = contentResolver.insert(Items.CONTENT_URI, values);
+                    uri = contentResolver.insert(Exercises.CONTENT_URI, values);
                 } else {
                     if (contentResolver.update(uri, values, null, null) <= 0) {
                         uri = null;

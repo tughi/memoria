@@ -10,20 +10,20 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class ProblemInputFragment extends PracticeFragment {
+public class AnswerInputFragment extends PracticeFragment {
 
-    private EditText problemEditText;
+    private EditText answerEditText;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.problem_input_fragment, container, false);
+        View view = inflater.inflate(R.layout.answer_input_fragment, container, false);
 
-        TextView solutionTextView = (TextView) view.findViewById(R.id.solution);
-        solutionTextView.setText(getItemSolution());
+        TextView questionTextView = (TextView) view.findViewById(R.id.question);
+        questionTextView.setText(getExerciseDefinition());
 
-        problemEditText = (EditText) view.findViewById(R.id.problem);
-        problemEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        answerEditText = (EditText) view.findViewById(R.id.answer);
+        answerEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -38,13 +38,13 @@ public class ProblemInputFragment extends PracticeFragment {
     }
 
     private void onSubmit() {
-        boolean correct = submitAnswer(problemEditText.getText().toString().trim());
+        boolean correct = submitAnswer(answerEditText.getText().toString().trim());
 
-        problemEditText.setEnabled(false);
-        problemEditText.setBackgroundColor(getResources().getColor(correct ? R.color.correct : R.color.wrong));
+        answerEditText.setEnabled(false);
+        answerEditText.setBackgroundColor(getResources().getColor(correct ? R.color.correct : R.color.wrong));
 
         MainActivity activity = (MainActivity) getActivity();
-        activity.continuePractice(correct ? NEXT_PROBLEM_NORMAL : NEXT_PROBLEM_DELAYED);
+        activity.continuePractice(correct ? PRACTICE_NORMAL : PRACTICE_DELAYED);
     }
 
 }

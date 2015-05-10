@@ -30,11 +30,11 @@
                 android:text="@string/practice" />
 
             <TextView
-                android:id="@+id/knowledge"
+                android:id="@+id/exercises"
                 style="@style/DrawerEntry"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/knowledge" />
+                android:text="@string/exercises" />
 
         </LinearLayout>
 

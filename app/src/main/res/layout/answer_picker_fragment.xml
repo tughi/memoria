@@ -8,7 +8,7 @@
     android:paddingTop="16dp">
 
     <TextView
-        android:id="@+id/problem"
+        android:id="@+id/question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -21,12 +21,12 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <com.tughi.memoria.PickerButton
-            android:id="@+id/solution_1"
+        <com.tughi.memoria.AnswerButton
+            android:id="@+id/answer_1"
             style="@style/Solution.LeftCard" />
 
-        <com.tughi.memoria.PickerButton
-            android:id="@+id/solution_2"
+        <com.tughi.memoria.AnswerButton
+            android:id="@+id/answer_2"
             style="@style/Solution.RightCard" />
 
     </LinearLayout>
@@ -38,12 +38,12 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <com.tughi.memoria.PickerButton
-            android:id="@+id/solution_3"
+        <com.tughi.memoria.AnswerButton
+            android:id="@+id/answer_3"
             style="@style/Solution.LeftCard" />
 
-        <com.tughi.memoria.PickerButton
-            android:id="@+id/solution_4"
+        <com.tughi.memoria.AnswerButton
+            android:id="@+id/answer_4"
             style="@style/Solution.RightCard" />
 
     </LinearLayout>

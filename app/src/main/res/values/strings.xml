@@ -6,5 +6,6 @@
     <string name="notes">Notes</string>
     <string name="done">Done</string>
     <string name="practice">Practice</string>
-    <string name="knowledge">Knowledge</string>
+    <string name="exercises">Exercises</string>
+    <string name="answer">Answer</string>
 </resources>

@@ -10,21 +10,21 @@ import android.widget.Toast;
 
 public abstract class PracticeFragment extends Fragment {
 
-    public static final int NEXT_PROBLEM_IMMEDIATELY = 0;
-    public static final int NEXT_PROBLEM_NORMAL = 500;
-    public static final int NEXT_PROBLEM_DELAYED = 1500;
+    public static final int PRACTICE_IMMEDIATELY = 0;
+    public static final int PRACTICE_NORMAL = 500;
+    public static final int PRACTICE_DELAYED = 1500;
 
-    private long itemId;
-    private String itemProblem;
-    private String itemSolution;
-    private int itemRating;
+    private long exerciseId;
+    private String exerciseScope;
+    private String exerciseDefinition;
+    private int exerciseRating;
 
-    public String getItemProblem() {
-        return itemProblem;
+    public String getExerciseScope() {
+        return exerciseScope;
     }
 
-    public String getItemSolution() {
-        return itemSolution;
+    public String getExerciseDefinition() {
+        return exerciseDefinition;
     }
 
     @Override
@@ -32,26 +32,30 @@ public abstract class PracticeFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle arguments = getArguments();
-        itemId = arguments.getLong(Items.Columns.ID);
-        itemProblem = arguments.getString(Items.Columns.PROBLEM);
-        itemSolution = arguments.getString(Items.Columns.SOLUTION);
-        itemRating = arguments.getInt(Items.Columns.RATING);
+        exerciseId = arguments.getLong(Exercises.COLUMN_ID);
+        exerciseScope = arguments.getString(Exercises.COLUMN_SCOPE);
+        exerciseDefinition = arguments.getString(Exercises.COLUMN_DEFINITION);
+        exerciseRating = arguments.getInt(Exercises.COLUMN_RATING);
 
         if (BuildConfig.DEBUG) {
-            char[] stars = {
-                    itemRating >= 1 ? '★' : '☆',
-                    itemRating >= 2 ? '★' : '☆',
-                    itemRating >= 3 ? '★' : '☆',
-                    itemRating >= 4 ? '★' : '☆',
-                    itemRating >= 5 ? '★' : '☆',
-                    ' ', '(', (char) (itemRating + '0'), ')'
-            };
-            Toast.makeText(getActivity(), new String(stars), Toast.LENGTH_SHORT).show();
+            StringBuilder text = new StringBuilder();
+
+            int index = 0;
+            for (; index < exerciseRating; index++) {
+                text.append('★');
+            }
+            for (; index < 5; index++) {
+                text.append('☆');
+            }
+
+            text.append(" (").append(Integer.toString(exerciseRating)).append(')');
+
+            Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
         }
     }
 
     protected boolean submitAnswer(String answerProblem) {
-        final boolean correct = itemProblem.equals(answerProblem);
+        final boolean correct = exerciseScope.equals(answerProblem);
 
         new AsyncTask<Object, Void, Boolean>() {
             @Override
@@ -59,10 +63,10 @@ public abstract class PracticeFragment extends Fragment {
                 Context context = (Context) params[0];
 
                 ContentValues values = new ContentValues();
-                values.put(Items.Columns.RATING, correct ? itemRating + 1 : Math.round(Math.min(itemRating, 5) / 2.));
-                values.put(Items.Columns.TESTED, System.currentTimeMillis());
+                values.put(Exercises.COLUMN_RATING, correct ? exerciseRating + 1 : Math.round(Math.min(exerciseRating, 5) / 2.));
+                values.put(Exercises.COLUMN_PRACTICE_TIME, System.currentTimeMillis());
 
-                return context.getContentResolver().update(ContentUris.withAppendedId(Items.CONTENT_URI, itemId), values, null, null) > 0;
+                return context.getContentResolver().update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exerciseId), values, null, null) > 0;
             }
         }.execute(getActivity().getApplicationContext());
 

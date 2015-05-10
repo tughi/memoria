@@ -15,19 +15,19 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, Handler.Callback, LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String[] ITEMS_PROJECTION = {
-            Items.Columns.ID,
-            Items.Columns.PROBLEM,
-            Items.Columns.SOLUTION,
-            Items.Columns.RATING,
+    private static final String[] EXERCISES_PROJECTION = {
+            Exercises.COLUMN_ID,
+            Exercises.COLUMN_SCOPE,
+            Exercises.COLUMN_DEFINITION,
+            Exercises.COLUMN_RATING,
     };
-    private static final String ITEMS_SORT_ORDER = Items.Columns.RATING + ", " + Items.Columns.TESTED;
-    private static final int ITEM_ID = 0;
-    private static final int ITEM_PROBLEM = 1;
-    private static final int ITEM_SOLUTION = 2;
-    private static final int ITEM_RATING = 3;
+    private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_RATING + ", " + Exercises.COLUMN_PRACTICE_TIME;
+    private static final int EXERCISE_ID = 0;
+    private static final int EXERCISE_SCOPE = 1;
+    private static final int EXERCISE_DEFINITION = 2;
+    private static final int EXERCISE_RATING = 3;
 
-    private Cursor itemsCursor;
+    private Cursor exercisesCursor;
 
     private DrawerLayout drawerLayout;
     private View drawerView;
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerView = findViewById(R.id.drawer);
         drawerView.findViewById(R.id.practice).setOnClickListener(this);
-        drawerView.findViewById(R.id.knowledge).setOnClickListener(this);
+        drawerView.findViewById(R.id.exercises).setOnClickListener(this);
 
         getSupportLoaderManager().initLoader(0, null, this);
     }
@@ -57,10 +57,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.practice:
                 replacePracticeFragment();
                 break;
-            case R.id.knowledge:
+            case R.id.exercises:
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.content, new ItemsFragment())
+                        .replace(R.id.content, new ExercisesFragment())
                         .commit();
                 break;
         }
@@ -76,36 +76,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void replacePracticeFragment() {
-        if (itemsCursor != null && itemsCursor.moveToFirst()) {
-            final int itemRating = itemsCursor.getInt(ITEM_RATING);
+        if (exercisesCursor != null && exercisesCursor.moveToFirst()) {
+            final int exerciseRating = exercisesCursor.getInt(EXERCISE_RATING);
+
+            Bundle args = new Bundle();
+            args.putLong(Exercises.COLUMN_ID, exercisesCursor.getLong(EXERCISE_ID));
+            args.putString(Exercises.COLUMN_SCOPE, exercisesCursor.getString(EXERCISE_SCOPE));
+            args.putString(Exercises.COLUMN_DEFINITION, exercisesCursor.getString(EXERCISE_DEFINITION));
+            args.putInt(Exercises.COLUMN_RATING, exerciseRating);
 
             PracticeFragment practiceFragment;
-            if (itemRating < 3) {
-                practiceFragment = new SolutionPickerFragment();
-            } else if (itemRating == 3) {
-                practiceFragment = new ProblemPickerFragment();
-            } else if (itemRating == 4) {
-                practiceFragment = new ProblemInputFragment();
+            if (exerciseRating < 4) {
+                args.putBoolean(AnswerPickerFragment.ARG_INVERT, exerciseRating == 3);
+                practiceFragment = new AnswerPickerFragment();
+            } else if (exerciseRating == 4) {
+                practiceFragment = new AnswerInputFragment();
             } else {
                 switch (random.nextInt(3)) {
                     case 0:
-                        practiceFragment = new SolutionPickerFragment();
-                        break;
+                        args.putBoolean(AnswerPickerFragment.ARG_INVERT, true);
                     case 1:
-                        practiceFragment = new ProblemPickerFragment();
+                        practiceFragment = new AnswerPickerFragment();
                         break;
                     case 2:
                     default:
-                        practiceFragment = new ProblemInputFragment();
+                        practiceFragment = new AnswerInputFragment();
                         break;
                 }
             }
 
-            Bundle args = new Bundle();
-            args.putLong(Items.Columns.ID, itemsCursor.getLong(ITEM_ID));
-            args.putString(Items.Columns.PROBLEM, itemsCursor.getString(ITEM_PROBLEM));
-            args.putString(Items.Columns.SOLUTION, itemsCursor.getString(ITEM_SOLUTION));
-            args.putInt(Items.Columns.RATING, itemRating);
             practiceFragment.setArguments(args);
 
             getSupportFragmentManager()
@@ -117,21 +116,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, Items.CONTENT_URI, ITEMS_PROJECTION, null, null, ITEMS_SORT_ORDER);
+        return new CursorLoader(this, Exercises.CONTENT_URI, EXERCISES_PROJECTION, null, null, EXERCISES_SORT_ORDER);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        itemsCursor = cursor;
+        exercisesCursor = cursor;
 
         if (getSupportFragmentManager().findFragmentById(R.id.content) == null) {
-            continuePractice(PracticeFragment.NEXT_PROBLEM_IMMEDIATELY);
+            continuePractice(PracticeFragment.PRACTICE_IMMEDIATELY);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        itemsCursor = null;
+        exercisesCursor = null;
     }
 
     public void continuePractice(int when) {

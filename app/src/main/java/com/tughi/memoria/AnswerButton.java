@@ -5,7 +5,7 @@ import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
 import android.widget.Checkable;
 
-public class PickerButton extends AppCompatButton implements Checkable {
+public class AnswerButton extends AppCompatButton implements Checkable {
 
     private static final int[] CHECKED_STATE_SET = {
             android.R.attr.state_checked
@@ -13,7 +13,7 @@ public class PickerButton extends AppCompatButton implements Checkable {
 
     private boolean checked;
 
-    public PickerButton(Context context, AttributeSet attrs) {
+    public AnswerButton(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

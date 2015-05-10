@@ -8,8 +8,8 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <provider
-            android:name=".KnowledgeProvider"
-            android:authorities="${applicationId}.knowledge"
+            android:name=".ExercisesProvider"
+            android:authorities="${applicationId}.provider"
             android:exported="false" />
 
         <activity android:name="com.tughi.memoria.MainActivity">
@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ItemEditActivity"
+            android:name=".EditExerciseActivity"
             android:windowSoftInputMode="stateUnchanged" />
     </application>
 

@@ -18,18 +18,18 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ItemsFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ExercisesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String[] ITEMS_PROJECTION = {
-            Items.Columns.ID,
-            Items.Columns.PROBLEM,
-            Items.Columns.SOLUTION,
+    private static final String[] EXERCISES_PROJECTION = {
+            Exercises.COLUMN_ID,
+            Exercises.COLUMN_SCOPE,
+            Exercises.COLUMN_DEFINITION,
     };
-    private static final int ITEM_ID = 0;
-    private static final int ITEM_PROBLEM = 1;
-    private static final int ITEM_SOLUTION = 2;
+    private static final int EXERCISE_ID = 0;
+    private static final int EXERCISE_SCOPE = 1;
+    private static final int EXERCISE_DEFINITION = 2;
 
-    private ItemsAdapter adapter;
+    private ExercisesAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,14 +45,14 @@ public class ItemsFragment extends ListFragment implements LoaderManager.LoaderC
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        inflater.inflate(R.menu.items_fragment, menu);
+        inflater.inflate(R.menu.exercises_fragment, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add:
-                startActivity(new Intent(getActivity(), ItemEditActivity.class));
+                startActivity(new Intent(getActivity(), EditExerciseActivity.class));
                 return true;
         }
 
@@ -61,13 +61,13 @@ public class ItemsFragment extends ListFragment implements LoaderManager.LoaderC
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), Items.CONTENT_URI, ITEMS_PROJECTION, null, null, null);
+        return new CursorLoader(getActivity(), Exercises.CONTENT_URI, EXERCISES_PROJECTION, null, null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (adapter == null) {
-            setListAdapter(adapter = new ItemsAdapter(cursor));
+            setListAdapter(adapter = new ExercisesAdapter(cursor));
         } else {
             adapter.setCursor(cursor);
         }
@@ -82,14 +82,14 @@ public class ItemsFragment extends ListFragment implements LoaderManager.LoaderC
 
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
-        startActivity(new Intent(getActivity(), ItemEditActivity.class).setData(ContentUris.withAppendedId(Items.CONTENT_URI, id)));
+        startActivity(new Intent(getActivity(), EditExerciseActivity.class).setData(ContentUris.withAppendedId(Exercises.CONTENT_URI, id)));
     }
 
-    private class ItemsAdapter extends BaseAdapter {
+    private class ExercisesAdapter extends BaseAdapter {
 
         private Cursor cursor;
 
-        public ItemsAdapter(Cursor cursor) {
+        public ExercisesAdapter(Cursor cursor) {
             this.cursor = cursor;
         }
 
@@ -114,7 +114,7 @@ public class ItemsFragment extends ListFragment implements LoaderManager.LoaderC
         @Override
         public long getItemId(int position) {
             if (cursor.moveToPosition(position)) {
-                return cursor.getLong(ITEM_ID);
+                return cursor.getLong(EXERCISE_ID);
             }
             throw new IllegalStateException("Could not move the cursor to position: " + position);
         }
@@ -126,8 +126,8 @@ public class ItemsFragment extends ListFragment implements LoaderManager.LoaderC
             }
 
             Cursor cursor = getItem(position);
-            ((TextView) convertView.findViewById(android.R.id.text1)).setText(cursor.getString(ITEM_PROBLEM));
-            ((TextView) convertView.findViewById(android.R.id.text2)).setText(cursor.getString(ITEM_SOLUTION));
+            ((TextView) convertView.findViewById(android.R.id.text1)).setText(cursor.getString(EXERCISE_SCOPE));
+            ((TextView) convertView.findViewById(android.R.id.text2)).setText(cursor.getString(EXERCISE_DEFINITION));
 
             return convertView;
         }

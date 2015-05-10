@@ -8,18 +8,18 @@
     android:paddingTop="16dp">
 
     <TextView
-        android:id="@+id/solution"
+        android:id="@+id/question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Display2" />
 
     <EditText
-        android:id="@+id/problem"
+        android:id="@+id/answer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:hint="@string/problem"
+        android:hint="@string/answer"
         android:imeOptions="actionDone"
         android:inputType="text"
         android:textAppearance="@style/TextAppearance.AppCompat.Display2" />
