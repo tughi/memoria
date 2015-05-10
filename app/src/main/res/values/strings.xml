@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Memoria</string>
     <string name="add">Add</string>
-    <string name="problem">problem</string>
-    <string name="solution">solution</string>
-    <string name="notes">notes</string>
-    <string name="done">done</string>
+    <string name="problem">Problem</string>
+    <string name="solution">Solution</string>
+    <string name="notes">Notes</string>
+    <string name="done">Done</string>
     <string name="practice">Practice</string>
     <string name="knowledge">Knowledge</string>
 </resources>

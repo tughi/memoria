@@ -77,19 +77,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void replacePracticeFragment() {
         if (itemsCursor != null && itemsCursor.moveToFirst()) {
+            final int itemRating = itemsCursor.getInt(ITEM_RATING);
+
             PracticeFragment practiceFragment;
-            int chance = random.nextInt(10);
-            if (chance < 4) {
+            if (itemRating < 3) {
                 practiceFragment = new SolutionPickerFragment();
-            } else {
+            } else if (itemRating == 3) {
                 practiceFragment = new ProblemPickerFragment();
+            } else if (itemRating == 4) {
+                practiceFragment = new ProblemInputFragment();
+            } else {
+                switch (random.nextInt(3)) {
+                    case 0:
+                        practiceFragment = new SolutionPickerFragment();
+                        break;
+                    case 1:
+                        practiceFragment = new ProblemPickerFragment();
+                        break;
+                    case 2:
+                    default:
+                        practiceFragment = new ProblemInputFragment();
+                        break;
+                }
             }
 
             Bundle args = new Bundle();
             args.putLong(Items.Columns.ID, itemsCursor.getLong(ITEM_ID));
             args.putString(Items.Columns.PROBLEM, itemsCursor.getString(ITEM_PROBLEM));
             args.putString(Items.Columns.SOLUTION, itemsCursor.getString(ITEM_SOLUTION));
-            args.putInt(Items.Columns.RATING, itemsCursor.getInt(ITEM_RATING));
+            args.putInt(Items.Columns.RATING, itemRating);
             practiceFragment.setArguments(args);
 
             getSupportFragmentManager()
