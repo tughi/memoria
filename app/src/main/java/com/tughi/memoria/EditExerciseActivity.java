@@ -31,7 +31,7 @@ public class EditExerciseActivity extends AppCompatActivity implements LoaderMan
         exerciseUri = getIntent().getData();
 
         setContentView(R.layout.edit_exercise_activity);
-        scopeEditText = (EditText) findViewById(R.id.question);
+        scopeEditText = (EditText) findViewById(R.id.scope);
         definitionEditText = (EditText) findViewById(R.id.definition);
         notesEditText = (EditText) findViewById(R.id.notes);
 

@@ -4,10 +4,12 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,11 +25,15 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
     private static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
             Exercises.COLUMN_SCOPE,
-            Exercises.COLUMN_DEFINITION,
+            Exercises.COLUMN_RATING,
+            Exercises.COLUMN_PRACTICE_TIME,
+            Exercises.COLUMN_NEW,
     };
+    private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_NEW + ", " + Exercises.COLUMN_PRACTICE_TIME;
     private static final int EXERCISE_ID = 0;
     private static final int EXERCISE_SCOPE = 1;
-    private static final int EXERCISE_DEFINITION = 2;
+    private static final int EXERCISE_RATING = 2;
+    private static final int EXERCISE_PRACTICE_TIME = 3;
 
     private ExercisesAdapter adapter;
 
@@ -61,7 +67,7 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), Exercises.CONTENT_URI, EXERCISES_PROJECTION, null, null, null);
+        return new CursorLoader(getActivity(), Exercises.CONTENT_URI, EXERCISES_PROJECTION, null, null, EXERCISES_SORT_ORDER);
     }
 
     @Override
@@ -121,13 +127,25 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            FragmentActivity activity = getActivity();
+
             if (convertView == null) {
-                convertView = LayoutInflater.from(getActivity()).inflate(android.R.layout.simple_list_item_2, parent, false);
+                convertView = LayoutInflater.from(activity).inflate(R.layout.exercises_item, parent, false);
             }
 
             Cursor cursor = getItem(position);
-            ((TextView) convertView.findViewById(android.R.id.text1)).setText(cursor.getString(EXERCISE_SCOPE));
-            ((TextView) convertView.findViewById(android.R.id.text2)).setText(cursor.getString(EXERCISE_DEFINITION));
+            ((TextView) convertView.findViewById(R.id.scope)).setText(cursor.getString(EXERCISE_SCOPE));
+            ((TextView) convertView.findViewById(R.id.rating)).setText(Exercises.getRatingText(cursor.getInt(EXERCISE_RATING)));
+
+            long practiceTime = cursor.getLong(EXERCISE_PRACTICE_TIME) * 1000;
+            TextView practiceTimeTextView = (TextView) convertView.findViewById(R.id.practice_time);
+            if (DateUtils.isToday(practiceTime)) {
+                practiceTimeTextView.setText(DateUtils.formatDateTime(activity, practiceTime, DateUtils.FORMAT_SHOW_TIME));
+            } else if (practiceTime == 0) {
+                practiceTimeTextView.setText("");
+            } else {
+                practiceTimeTextView.setText(DateUtils.formatDateTime(activity, practiceTime, DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE));
+            }
 
             return convertView;
         }

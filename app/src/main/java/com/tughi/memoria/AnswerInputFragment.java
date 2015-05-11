@@ -20,7 +20,7 @@ public class AnswerInputFragment extends PracticeFragment {
         View view = inflater.inflate(R.layout.answer_input_fragment, container, false);
 
         TextView ratingTextView = (TextView) view.findViewById(R.id.rating);
-        ratingTextView.setText(getRatingText());
+        ratingTextView.setText(Exercises.getRatingText(getExerciseRating()));
 
         TextView questionTextView = (TextView) view.findViewById(R.id.question);
         questionTextView.setText(getExerciseDefinition());

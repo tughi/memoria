@@ -26,20 +26,8 @@ public abstract class PracticeFragment extends Fragment {
         return exerciseDefinition;
     }
 
-    protected CharSequence getRatingText() {
-        StringBuilder text = new StringBuilder();
-
-        int index = 0;
-        for (; index < 5 && index < exerciseRating; index++) {
-            text.append('★');
-        }
-        for (; index < 5; index++) {
-            text.append('☆');
-        }
-
-        text.append(" (").append(Integer.toString(exerciseRating)).append(')');
-
-        return text;
+    public int getExerciseRating() {
+        return exerciseRating;
     }
 
     @Override
