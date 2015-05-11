@@ -49,6 +49,10 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.answer_picker_fragment, container, false);
+
+        TextView ratingTextView = (TextView) view.findViewById(R.id.rating);
+        ratingTextView.setText(getRatingText());
+
         TextView questionTextView = (TextView) view.findViewById(R.id.question);
         questionTextView.setText(getArguments().getString(invert ? Exercises.COLUMN_DEFINITION : Exercises.COLUMN_SCOPE));
 

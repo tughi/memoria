@@ -6,7 +6,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.widget.Toast;
 
 public abstract class PracticeFragment extends Fragment {
 
@@ -27,6 +26,22 @@ public abstract class PracticeFragment extends Fragment {
         return exerciseDefinition;
     }
 
+    protected CharSequence getRatingText() {
+        StringBuilder text = new StringBuilder();
+
+        int index = 0;
+        for (; index < 5 && index < exerciseRating; index++) {
+            text.append('★');
+        }
+        for (; index < 5; index++) {
+            text.append('☆');
+        }
+
+        text.append(" (").append(Integer.toString(exerciseRating)).append(')');
+
+        return text;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,22 +51,6 @@ public abstract class PracticeFragment extends Fragment {
         exerciseScope = arguments.getString(Exercises.COLUMN_SCOPE);
         exerciseDefinition = arguments.getString(Exercises.COLUMN_DEFINITION);
         exerciseRating = arguments.getInt(Exercises.COLUMN_RATING);
-
-        if (BuildConfig.DEBUG) {
-            StringBuilder text = new StringBuilder();
-
-            int index = 0;
-            for (; index < exerciseRating; index++) {
-                text.append('★');
-            }
-            for (; index < 5; index++) {
-                text.append('☆');
-            }
-
-            text.append(" (").append(Integer.toString(exerciseRating)).append(')');
-
-            Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
-        }
     }
 
     protected boolean submitAnswer(String answerProblem) {
