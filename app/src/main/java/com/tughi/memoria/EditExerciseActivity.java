@@ -111,6 +111,7 @@ public class EditExerciseActivity extends AppCompatActivity implements LoaderMan
                 ContentResolver contentResolver = context.getContentResolver();
                 Uri uri = exerciseUri;
                 if (uri == null) {
+                    values.put(Exercises.COLUMN_RATING, 3);
                     uri = contentResolver.insert(Exercises.CONTENT_URI, values);
                 } else {
                     if (contentResolver.update(uri, values, null, null) <= 0) {
