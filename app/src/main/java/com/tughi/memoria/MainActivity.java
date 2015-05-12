@@ -88,23 +88,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             args.putInt(Exercises.COLUMN_RATING, exerciseRating);
 
             PracticeFragment practiceFragment;
-            if (exerciseRating < 4) {
-                args.putBoolean(AnswerPickerFragment.ARG_INVERT, exerciseRating == 3);
-                practiceFragment = new AnswerPickerFragment();
-            } else if (exerciseRating == 4) {
-                practiceFragment = new AnswerInputFragment();
-            } else {
-                switch (random.nextInt(3)) {
-                    case 0:
-                        args.putBoolean(AnswerPickerFragment.ARG_INVERT, true);
-                    case 1:
-                        practiceFragment = new AnswerPickerFragment();
-                        break;
-                    case 2:
-                    default:
-                        practiceFragment = new AnswerInputFragment();
-                        break;
-                }
+            switch (exerciseRating % 5) {
+                case 4:
+                    practiceFragment = new AnswerInputFragment();
+                    break;
+                case 3:
+                    args.putBoolean(AnswerPickerFragment.ARG_INVERT, exerciseRating == 3);
+                case 2:
+                case 1:
+                default:
+                    practiceFragment = new AnswerPickerFragment();
+                    break;
             }
 
             practiceFragment.setArguments(args);
@@ -113,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .beginTransaction()
                     .replace(R.id.content, practiceFragment)
                     .commit();
+        } else {
+            // TODO: handle the case where no exercises are left to practice on
         }
     }
 
