@@ -46,7 +46,7 @@ public class AnswerInputFragment extends PracticeFragment {
         answerEditText.setEnabled(false);
         answerEditText.setBackgroundColor(getResources().getColor(correct ? R.color.correct : R.color.wrong));
 
-        MainActivity activity = (MainActivity) getActivity();
+        PracticeActivity activity = (PracticeActivity) getActivity();
         activity.continuePractice(correct ? PRACTICE_NORMAL : PRACTICE_DELAYED);
     }
 

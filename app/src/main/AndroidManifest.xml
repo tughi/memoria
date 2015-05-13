@@ -13,13 +13,14 @@
             android:authorities="${applicationId}.provider"
             android:exported="false" />
 
-        <activity android:name="com.tughi.memoria.MainActivity">
+        <activity android:name=".PracticeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ExercisesActivity" />
         <activity
             android:name=".EditExerciseActivity"
             android:windowSoftInputMode="stateUnchanged" />

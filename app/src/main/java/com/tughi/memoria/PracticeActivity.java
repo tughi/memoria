@@ -1,5 +1,6 @@
 package com.tughi.memoria;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,13 +8,11 @@ import android.os.Message;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import java.util.Random;
-
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, Handler.Callback, LoaderManager.LoaderCallbacks<Cursor> {
+public class PracticeActivity extends AppCompatActivity implements Handler.Callback, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
@@ -22,7 +21,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Exercises.COLUMN_RATING,
             Exercises.COLUMN_NEW,
     };
-    private static final String EXERCISES_SELECTION = Exercises.COLUMN_PRACTICE_TIME + " < CAST(STRFTIME('%s', 'now') AS INTEGER)";
     private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_NEW + ", " + Exercises.COLUMN_PRACTICE_TIME;
     private static final int EXERCISE_ID = 0;
     private static final int EXERCISE_SCOPE = 1;
@@ -31,11 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Cursor exercisesCursor;
 
-    private DrawerLayout drawerLayout;
-    private View drawerView;
-
     private Handler practiceHandler;
-    private Random random = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,31 +37,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         practiceHandler = new Handler(this);
 
-        setContentView(R.layout.main_activity);
-
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerView = findViewById(R.id.drawer);
-        drawerView.findViewById(R.id.practice).setOnClickListener(this);
-        drawerView.findViewById(R.id.exercises).setOnClickListener(this);
-
         getSupportLoaderManager().initLoader(0, null, this);
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.practice:
-                replacePracticeFragment();
-                break;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.exercises:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.content, new ExercisesFragment())
-                        .commit();
-                break;
+                startActivity(new Intent(this, ExercisesActivity.class));
+                return true;
         }
 
-        drawerLayout.closeDrawer(drawerView);
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.practice_activity, menu);
+
+        return true;
     }
 
     @Override
@@ -88,24 +78,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             args.putInt(Exercises.COLUMN_RATING, exerciseRating);
 
             PracticeFragment practiceFragment;
-            switch (exerciseRating % 5) {
-                case 4:
-                    practiceFragment = new AnswerInputFragment();
-                    break;
-                case 3:
-                    args.putBoolean(AnswerPickerFragment.ARG_INVERT, exerciseRating == 3);
-                case 2:
-                case 1:
-                default:
-                    practiceFragment = new AnswerPickerFragment();
-                    break;
+            if (exercisesCursor.getCount() > 10) {
+                switch (exerciseRating % 5) {
+                    case 4:
+                        practiceFragment = new AnswerInputFragment();
+                        break;
+                    case 3:
+                        args.putBoolean(AnswerPickerFragment.ARG_INVERT, exerciseRating == 3);
+                    case 2:
+                    case 1:
+                    default:
+                        practiceFragment = new AnswerPickerFragment();
+                        break;
+                }
+            } else {
+                practiceFragment = new AnswerInputFragment();
             }
 
             practiceFragment.setArguments(args);
 
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.content, practiceFragment)
+                    .replace(android.R.id.content, practiceFragment)
                     .commit();
         } else {
             // TODO: handle the case where no exercises are left to practice on
@@ -114,14 +108,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, Exercises.CONTENT_URI, EXERCISES_PROJECTION, EXERCISES_SELECTION, null, EXERCISES_SORT_ORDER);
+        return new CursorLoader(this, Exercises.CONTENT_URI, EXERCISES_PROJECTION, null, null, EXERCISES_SORT_ORDER);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         exercisesCursor = cursor;
 
-        if (getSupportFragmentManager().findFragmentById(R.id.content) == null) {
+        if (getSupportFragmentManager().findFragmentById(android.R.id.content) == null) {
             continuePractice(PracticeFragment.PRACTICE_IMMEDIATELY);
         }
     }

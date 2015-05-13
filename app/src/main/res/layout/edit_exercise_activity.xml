@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/abc_control_inset_material"
             android:paddingRight="@dimen/abc_control_inset_material"
-            android:text="@string/problem"
+            android:text="@string/scope"
             android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
         <EditText
@@ -29,7 +29,7 @@
             android:layout_marginTop="16dp"
             android:paddingLeft="@dimen/abc_control_inset_material"
             android:paddingRight="@dimen/abc_control_inset_material"
-            android:text="@string/solution"
+            android:text="@string/definition"
             android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
         <EditText
