@@ -8,7 +8,6 @@ import android.os.Message;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,11 +34,6 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setSubtitle(R.string.practice);
-        }
 
         practiceHandler = new Handler(this);
 

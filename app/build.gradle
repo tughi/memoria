@@ -32,25 +32,29 @@ dependencies {
 }
 
 task generateDrawables << {
-    def inkscapeCmd = 'inkscape'
+    if ("which inkscape".execute().waitFor() != 0) {
+        println("Inkscape could not be found in the PATH.")
+        return
+    }
 
     def svgDir = new File(projectDir, ['src', 'main', 'svg'].join(File.separator))
     def resDir = new File(projectDir, ['src', 'main', 'res'].join(File.separator))
 
     def DENSITIES = [
-            '-mdpi'   : 90,
-            '-hdpi'   : 135,
-            '-xhdpi'  : 180,
-            '-xxhdpi' : 270,
-            '-xxxhdpi': 360
+            'mdpi'   : 90,
+            'hdpi'   : 135,
+            'xhdpi'  : 180,
+            'xxhdpi' : 270,
+            'xxxhdpi': 360
     ]
 
     def generate = { String drawable ->
-        new File(svgDir, drawable).eachFileMatch(~/.*\.svg/) { svg ->
+        new File(svgDir, drawable.replace('-*', '')).eachFileMatch(~/.*\.svg/) { svg ->
             DENSITIES.each { type, dpi ->
-                def png = new File(new File(resDir, drawable + type), svg.name.replace('.svg', '.png'))
+                def png = new File(new File(resDir, drawable.replace('*', type)), svg.name.replace('.svg', '.png'))
                 if (!png.exists() || png.lastModified() < svg.lastModified()) {
-                    "$inkscapeCmd -e $png -d$dpi $svg"
+                    png.parentFile.mkdirs()
+                    "inkscape -e $png -y 0 -d$dpi $svg"
                             .execute()
                             .waitFor()
                 }
@@ -58,7 +62,9 @@ task generateDrawables << {
         }
     }
 
-    generate('drawable')
+    generate('drawable-*')
+//    generate('drawable-*-v11')
+//    generate('mipmap-*')
 }
 
 preBuild.dependsOn generateDrawables
