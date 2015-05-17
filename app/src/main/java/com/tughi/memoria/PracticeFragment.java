@@ -41,8 +41,8 @@ public abstract class PracticeFragment extends Fragment {
         exerciseRating = arguments.getInt(Exercises.COLUMN_RATING);
     }
 
-    protected boolean submitAnswer(String answerProblem) {
-        final boolean correct = exerciseScope.equals(answerProblem);
+    protected boolean submitAnswer(String answerScope) {
+        final boolean correct = checkAnswer(answerScope);
 
         new AsyncTask<Object, Void, Boolean>() {
             @Override
@@ -70,6 +70,22 @@ public abstract class PracticeFragment extends Fragment {
         }.execute(getActivity().getApplicationContext());
 
         return correct;
+    }
+
+    private boolean checkAnswer(String answerScope) {
+        StringBuilder exercise = new StringBuilder(exerciseScope.length());
+        for (char c : exerciseScope.toCharArray()) {
+            if (Character.isLetterOrDigit(c)) {
+                exercise.append(c);
+            }
+        }
+        StringBuilder answer = new StringBuilder(answerScope.length());
+        for (char c : answerScope.toCharArray()) {
+            if (Character.isLetterOrDigit(c)) {
+                answer.append(c);
+            }
+        }
+        return exercise.toString().equals(answer.toString());
     }
 
 }
