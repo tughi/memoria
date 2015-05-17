@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#8BC34A</color>
-    <color name="primary_dark">#689F38</color>
-    <color name="accent">#C6FF00</color>
+    <color name="background">#3E2723</color>
 
-    <color name="correct">#689F38</color>
+    <color name="primary">#FF9800</color>
+    <color name="primary_dark">#F57C00</color>
+    <color name="accent">#FF9800</color>
+
+    <color name="correct">#FF9800</color>
     <color name="wrong">#D32F2F</color>
 
-    <color name="drawer">#424242</color>
+    <color name="picker_button">#4E342E</color>
 </resources>
