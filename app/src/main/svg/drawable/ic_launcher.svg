@@ -144,7 +144,7 @@
        id="path3914"
        inkscape:connector-curvature="0" />
     <path
-       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#ff5722;fill-opacity:1;stroke:none;stroke-width:8;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#e64a19;fill-opacity:1;stroke:none;stroke-width:8;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
        d="M 16.75,42.625 C 19.004852,43.511364 21.440832,44 24,44 34.998316,44 44,34.998316 44.000001,24 44.000001,18.500842 41.750212,13.500211 38.125,9.8749998 L 32.5,15.5 C 34.66565,17.665651 36,20.662602 35.999999,24 36,30.674796 30.674796,36 24,36 c -0.581225,0 -1.160768,-0.04671 -1.71875,-0.125 0.674602,1.289397 1.264018,2.661472 1.71875,4.124999 -2.359882,1.301762 -4.826123,2.1722 -7.25,2.625001 z"
        id="path3961"
        inkscape:connector-curvature="0" />
@@ -161,7 +161,7 @@
        inkscape:connector-curvature="0"
        id="path3963"
        d="m 36.004611,21.861011 c 0.933718,-2.630718 1.616868,-4.853055 2.837776,-7.885766 1.220908,-3.032713 2.268095,-5.1084961 3.417557,-7.6523587 C 37.00887,4.1759447 30.183007,4.5893242 24,8.0000008 26.095214,14.74332 30.730696,19.770804 36.004611,21.861011 z"
-       style="fill:#ff5722;fill-opacity:1;stroke:none" />
+       style="fill:#e64a19;fill-opacity:1;stroke:none" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -169,7 +169,7 @@
      inkscape:label="Brain"
      style="display:inline">
     <path
-       style="opacity:0.25;fill:#f57c00;fill-opacity:1;stroke:none"
+       style="opacity:0.25;fill:#3e2723;fill-opacity:1;stroke:none"
        d="M 32.96875,12.59375 12.375,33.1875 23.15625,43.96875 C 23.435876,43.980347 23.717524,44 24,44 c 11.045695,0 20,-8.954305 20,-20 0,-0.125404 0.0023,-0.250145 0,-0.375 L 32.96875,12.59375 z"
        id="rect4085"
        inkscape:connector-curvature="0" />
