@@ -13,7 +13,9 @@
             android:authorities="${applicationId}.provider"
             android:exported="false" />
 
-        <activity android:name=".PracticeActivity">
+        <activity
+            android:name=".PracticeActivity"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
