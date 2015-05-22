@@ -38,6 +38,10 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
         practiceHandler = new Handler(this);
 
         getSupportLoaderManager().initLoader(0, null, this);
+
+        if (savedInstanceState == null) {
+            startService(new Intent(this, SyncService.class));
+        }
     }
 
     @Override

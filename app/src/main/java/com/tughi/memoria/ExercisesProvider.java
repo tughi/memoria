@@ -21,7 +21,8 @@ public class ExercisesProvider extends ContentProvider {
     private static final String TABLE_EXERCISES = "exercises";
 
     private static final int URI_EXERCISES = 0;
-    private static final int URI_EXERCISE = 1;
+    private static final int URI_EXERCISES_SYNC = 1;
+    private static final int URI_EXERCISE = 2;
 
     private UriMatcher uriMatcher;
 
@@ -44,6 +45,7 @@ public class ExercisesProvider extends ContentProvider {
     public boolean onCreate() {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(AUTHORITY, "exercises", URI_EXERCISES);
+        uriMatcher.addURI(AUTHORITY, "exercises/sync", URI_EXERCISES_SYNC);
         uriMatcher.addURI(AUTHORITY, "exercises/#", URI_EXERCISE);
 
         helper = new DatabaseOpenHelper(getContext(), "exercises.db", 1);
@@ -94,10 +96,25 @@ public class ExercisesProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         switch (uriMatcher.match(uri)) {
+            case URI_EXERCISES_SYNC:
+                return insertOrUpdateExercises(values, selection, selectionArgs);
             case URI_EXERCISE:
                 return updateExercises(values, AND(Exercises.COLUMN_ID + " = " + uri.getLastPathSegment(), selection), selectionArgs);
         }
         throw new UnsupportedOperationException("Not supported: " + uri);
+    }
+
+    private int insertOrUpdateExercises(ContentValues values, String selection, String[] selectionArgs) {
+        int result;
+
+        SQLiteDatabase db = helper.getWritableDatabase();
+        if (db.insertWithOnConflict(TABLE_EXERCISES, null, values, SQLiteDatabase.CONFLICT_IGNORE) == -1) {
+            result = db.update(TABLE_EXERCISES, values, selection, selectionArgs);
+        } else {
+            result = 1;
+        }
+
+        return result;
     }
 
     private int updateExercises(ContentValues values, String selection, String[] selectionArgs) {
