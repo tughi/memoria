@@ -13,7 +13,8 @@ public class Exercises {
     public static final String COLUMN_NOTES = "notes";
     public static final String COLUMN_PRACTICE_TIME = "practice_time";
     public static final String COLUMN_RATING = "rating";
-    public static final String COLUMN_SYNC = "sync";
+    public static final String COLUMN_SYNC_ID = "sync_id";
+    public static final String COLUMN_SYNC_TIME = "sync_time";
     public static final String COLUMN_NEW = "new";
 
     protected static CharSequence getRatingText(final int rating) {

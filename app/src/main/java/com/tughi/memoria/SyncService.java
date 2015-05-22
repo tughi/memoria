@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 public class SyncService extends IntentService {
 
@@ -29,6 +30,7 @@ public class SyncService extends IntentService {
             Exercises.COLUMN_NOTES,
             Exercises.COLUMN_PRACTICE_TIME,
             Exercises.COLUMN_RATING,
+            Exercises.COLUMN_SYNC_ID,
             Exercises.COLUMN_NEW,
     };
     private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_NEW + ", " + Exercises.COLUMN_PRACTICE_TIME;
@@ -38,11 +40,13 @@ public class SyncService extends IntentService {
     private static final int EXERCISE_NOTES = 3;
     private static final int EXERCISE_PRACTICE_TIME = 4;
     private static final int EXERCISE_RATING = 5;
+    private static final int EXERCISE_SYNC_ID = 6;
 
     public static final String APPLICATION_USER = "f2e38c2e-fffb-11e4-a322-1697f925ec7b";
 
     public static final String HTTP_METHOD_GET = "GET";
     public static final String HTTP_METHOD_POST = "POST";
+    public static final String HTTP_METHOD_PUT = "PUT";
 
     public SyncService() {
         super(SyncService.class.getSimpleName());
@@ -50,19 +54,27 @@ public class SyncService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        long sync = System.currentTimeMillis();
+        long syncTime = System.currentTimeMillis();
 
+        int updates = 0;
         try {
-            downloadExercises(sync);
+            updates = downloadExercises(syncTime);
 
-            // uploadExercises();
+            uploadExercises(syncTime);
         } catch (IOException exception) {
             Log.e(getClass().getName(), "Download failed!", exception);
+        } finally {
+            if (updates > 0) {
+                getContentResolver().notifyChange(Exercises.CONTENT_URI, null);
+            }
         }
     }
 
-    private void downloadExercises(long sync) throws IOException {
-        HttpURLConnection connection = openConnection("https://api.parse.com/1/classes/Exercise", HTTP_METHOD_GET);
+    private int downloadExercises(long syncTime) throws IOException {
+        int result = 0;
+
+        String params = "limit=1000&where=" + URLEncoder.encode("{\"user\":\"" + APPLICATION_USER + "\"}", "UTF-8");
+        HttpURLConnection connection = openConnection("https://api.parse.com/1/classes/Exercise?" + params, HTTP_METHOD_GET);
 
         InputStream in = connection.getInputStream();
         try {
@@ -95,11 +107,12 @@ public class SyncService extends IntentService {
                             values.put(Exercises.COLUMN_NOTES, exercise.notes);
                             values.put(Exercises.COLUMN_RATING, exercise.rating);
                             values.put(Exercises.COLUMN_PRACTICE_TIME, exercise.practiceTime);
-                            values.put(Exercises.COLUMN_SYNC, sync);
+                            values.put(Exercises.COLUMN_SYNC_ID, exercise.objectId);
+                            values.put(Exercises.COLUMN_SYNC_TIME, syncTime);
 
                             updateSelectionArgs[0] = exercise.scope;
                             updateSelectionArgs[1] = Long.toString(exercise.practiceTime);
-                            contentResolver.update(Exercises.CONTENT_SYNC_URI, values, updateSelection, updateSelectionArgs);
+                            result += contentResolver.update(Exercises.CONTENT_SYNC_URI, values, updateSelection, updateSelectionArgs);
                         }
                     } else {
                         throw new IOException("The 'results' should have been an array");
@@ -112,14 +125,22 @@ public class SyncService extends IntentService {
         } finally {
             in.close();
         }
+
+        return result;
     }
 
-    private void uploadExercises() {
-        Cursor cursor = getContentResolver().query(Exercises.CONTENT_URI, EXERCISES_PROJECTION, null, null, EXERCISES_SORT_ORDER);
+    private void uploadExercises(long syncTime) {
+        String selection = Exercises.COLUMN_SYNC_TIME + " < " + syncTime;
+        Cursor cursor = getContentResolver().query(Exercises.CONTENT_URI, EXERCISES_PROJECTION, selection, null, EXERCISES_SORT_ORDER);
         if (cursor.moveToFirst()) {
             do {
                 try {
-                    HttpURLConnection connection = openConnection("https://api.parse.com/1/classes/Exercise", HTTP_METHOD_POST);
+                    HttpURLConnection connection;
+                    if (cursor.isNull(EXERCISE_SYNC_ID)) {
+                        connection = openConnection("https://api.parse.com/1/classes/Exercise", HTTP_METHOD_POST);
+                    } else {
+                        connection = openConnection("https://api.parse.com/1/classes/Exercise/" + cursor.getString(EXERCISE_SYNC_ID), HTTP_METHOD_PUT);
+                    }
 
                     Exercise exercise = new Exercise();
                     exercise.scope = cursor.getString(EXERCISE_SCOPE);
@@ -147,14 +168,15 @@ public class SyncService extends IntentService {
         connection.setRequestProperty("X-Parse-REST-API-Key", "2iqeHuTq3f6Mklow9DT5LUDFJatBbBuSs23Pl5Wk");
 
         connection.setRequestMethod(method);
-        if (HTTP_METHOD_POST.equals(method)) {
+        if (HTTP_METHOD_POST.equals(method) || HTTP_METHOD_PUT.equals(method)) {
             connection.setRequestProperty("Content-Type", "application/json");
         }
         return connection;
     }
 
-    @JsonIgnoreProperties({ "objectId", "createdAt", "updatedAt" })
+    @JsonIgnoreProperties({"createdAt", "updatedAt"})
     private static class Exercise {
+        public String objectId;
         public String scope;
         public String definition;
         public String notes;

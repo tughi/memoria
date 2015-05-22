@@ -45,6 +45,13 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
     }
 
     @Override
+    protected void onDestroy() {
+        startService(new Intent(this, SyncService.class));
+
+        super.onDestroy();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.exercises:
