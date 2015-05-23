@@ -35,6 +35,8 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.practice_activity);
+
         practiceHandler = new Handler(this);
 
         getSupportLoaderManager().initLoader(0, null, this);
@@ -110,7 +112,7 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
 
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(android.R.id.content, practiceFragment)
+                    .replace(R.id.content, practiceFragment)
                     .commit();
         } else {
             // TODO: handle the case where no exercises are left to practice on
@@ -126,7 +128,7 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         exercisesCursor = cursor;
 
-        if (getSupportFragmentManager().findFragmentById(android.R.id.content) == null) {
+        if (getSupportFragmentManager().findFragmentById(R.id.content) == null) {
             continuePractice(PracticeFragment.PRACTICE_IMMEDIATELY);
         }
     }

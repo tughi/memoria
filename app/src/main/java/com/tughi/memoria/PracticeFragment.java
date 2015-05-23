@@ -55,9 +55,9 @@ public abstract class PracticeFragment extends Fragment {
                     rating = exerciseRating + 1;
 
                     final long currentTime = System.currentTimeMillis() / 1000;
-                    practiceTime = currentTime + (int) Math.pow(3, rating);
+                    practiceTime = currentTime + (int) Math.pow(3, rating - 1) * (currentTime % 3 + 1);
                 } else {
-                    rating = exerciseRating / 2;
+                    rating = Math.round(exerciseRating / 2.3f);
                     practiceTime = 0;
                 }
 
