@@ -1,8 +1,12 @@
 package com.tughi.memoria;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -48,14 +52,19 @@ public abstract class PracticeFragment extends Fragment {
             @Override
             protected Boolean doInBackground(Object... params) {
                 final Context context = (Context) params[0];
+                final ContentResolver contentResolver = context.getContentResolver();
+
+                final long currentTime = System.currentTimeMillis();
 
                 final int rating;
                 final long practiceTime;
                 if (correct) {
                     rating = exerciseRating + 1;
 
-                    final long currentTime = System.currentTimeMillis() / 1000;
-                    practiceTime = currentTime + (int) Math.pow(3, rating - 1) * (currentTime % 3 + 1);
+                    long interval = (long) (Math.pow(3, rating - 1));
+                    interval += (long) (interval * (currentTime % 1000 + 1) / 1000.);
+
+                    practiceTime = currentTime / 1000 + interval;
                 } else {
                     rating = Math.round(exerciseRating / 2.3f);
                     practiceTime = 0;
@@ -64,8 +73,15 @@ public abstract class PracticeFragment extends Fragment {
                 ContentValues values = new ContentValues();
                 values.put(Exercises.COLUMN_RATING, rating);
                 values.put(Exercises.COLUMN_PRACTICE_TIME, practiceTime);
+                int result = contentResolver.update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exerciseId), values, null, null);
 
-                return context.getContentResolver().update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exerciseId), values, null, null) > 0;
+                if (result > 0) {
+                    PendingIntent intent = PendingIntent.getService(context, 0, new Intent(context, SyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
+                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.set(AlarmManager.RTC, currentTime + AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15, intent);
+                }
+
+                return Boolean.TRUE;
             }
         }.execute(getActivity().getApplicationContext());
 
