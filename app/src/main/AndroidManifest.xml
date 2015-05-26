@@ -33,6 +33,7 @@
             android:label="@string/exercise"
             android:windowSoftInputMode="stateUnchanged" />
 
+        <service android:name=".PracticeReminderService" />
         <service android:name=".SyncService" />
     </application>
 

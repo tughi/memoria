@@ -9,4 +9,6 @@
     <string name="exercises">Exercises</string>
     <string name="exercise">Exercise</string>
     <string name="answer">Answer</string>
+    <string name="practice_time">Practice time</string>
+    <string name="practice_exercises">You are behind with %1$d exercises.</string>
 </resources>
