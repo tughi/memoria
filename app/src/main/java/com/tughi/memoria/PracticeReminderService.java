@@ -3,6 +3,7 @@ package com.tughi.memoria;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.app.NotificationCompat;
@@ -32,6 +33,8 @@ public class PracticeReminderService extends IntentService {
                     .setSmallIcon(R.drawable.ic_notification)
                     .setContentTitle(getString(R.string.practice_time))
                     .setContentText(getString(R.string.practice_exercises, count))
+                    .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, PracticeActivity.class), PendingIntent.FLAG_CANCEL_CURRENT))
+                    .setAutoCancel(true)
                     .build();
             notificationManager.notify(R.id.practice_notification, notification);
         } else {
