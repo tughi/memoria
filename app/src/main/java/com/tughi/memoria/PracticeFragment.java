@@ -76,9 +76,10 @@ public abstract class PracticeFragment extends Fragment {
                 int result = contentResolver.update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exerciseId), values, null, null);
 
                 if (result > 0) {
-                    PendingIntent intent = PendingIntent.getService(context, 0, new Intent(context, SyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
+                    Intent intent = new Intent(context, SyncService.class).setAction(SyncService.ACTION_PUSH);
+                    PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
                     AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.set(AlarmManager.RTC, currentTime + AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15, intent);
+                    alarmManager.set(AlarmManager.RTC, currentTime + AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15, pendingIntent);
                 }
 
                 return Boolean.TRUE;

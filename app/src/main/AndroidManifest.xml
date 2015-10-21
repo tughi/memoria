@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="com.tughi.memoria"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.tughi.memoria">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,6 +10,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
         <provider
             android:name=".ExercisesProvider"
             android:authorities="${applicationId}.provider"
@@ -25,16 +25,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ExercisesActivity"
             android:label="@string/exercises" />
+
         <activity
             android:name=".EditExerciseActivity"
             android:label="@string/exercise"
             android:windowSoftInputMode="stateUnchanged" />
 
+        <activity android:name=".SyncSetupActivity" />
+
         <service android:name=".PracticeReminderService" />
+
         <service android:name=".SyncService" />
+
     </application>
 
 </manifest>
