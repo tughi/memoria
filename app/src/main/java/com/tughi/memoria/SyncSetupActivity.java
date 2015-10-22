@@ -9,6 +9,7 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.DriveFile;
 
 /**
  * Used to activate the synchronization with Google Drive (AppFolder).
@@ -56,9 +57,16 @@ public class SyncSetupActivity extends AppCompatActivity implements GoogleApiCli
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        startService(new Intent(this, SyncService.class).setAction(SyncService.ACTION_PULL));
+        final Application application = (Application) getApplication();
 
-        finish();
+        application.new InitExercisesDriveFileTask() {
+            @Override
+            protected void onPostExecute(DriveFile driveFile) {
+                startService(new Intent(application, SyncService.class).setAction(SyncService.ACTION_PULL));
+
+                finish();
+            }
+        }.execute();
     }
 
     @Override

@@ -94,10 +94,10 @@ public class Application extends android.app.Application {
         return exercisesDriveFile;
     }
 
-    private class InitExercisesDriveFileTask extends AsyncTask<Object, Object, Object> {
+    public class InitExercisesDriveFileTask extends AsyncTask<Object, Object, DriveFile> {
 
         @Override
-        protected Object doInBackground(Object... params) {
+        protected DriveFile doInBackground(Object... params) {
             DriveFolder appFolder = Drive.DriveApi.getAppFolder(googleApiClient);
 
             if (exercisesDriveFile == null) {
@@ -132,7 +132,7 @@ public class Application extends android.app.Application {
                 exercisesDriveFile.addChangeSubscription(googleApiClient);
             }
 
-            return null;
+            return exercisesDriveFile;
         }
 
     }
