@@ -1,6 +1,7 @@
 package com.tughi.memoria;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -51,9 +52,11 @@ public class SyncService extends IntentService {
         }
 
         try {
-            switch (intent.getAction()) {
+            String action = intent.getAction();
+            Log.i(getClass().getName(), action);
+            switch (action) {
                 case ACTION_PULL:
-                    handlePull();
+                    handlePull(this, googleApiClient, exercisesDriveFile);
                     break;
                 case ACTION_PUSH:
                     handlePush();
@@ -64,14 +67,14 @@ public class SyncService extends IntentService {
         }
     }
 
-    private void handlePull() throws IOException {
+    public static void handlePull(Context context, GoogleApiClient googleApiClient, DriveFile exercisesDriveFile) throws IOException {
         DriveContents exercisesContents = exercisesDriveFile.open(googleApiClient, DriveFile.MODE_READ_ONLY, null)
                 .await()
                 .getDriveContents();
 
         InputStream input = new FileInputStream(exercisesContents.getParcelFileDescriptor().getFileDescriptor());
 
-        ExercisesJsonHelper.importFromJson(this, input);
+        ExercisesJsonHelper.importFromJson(context, input);
     }
 
     private void handlePush() throws IOException {

@@ -121,15 +121,9 @@ public class Application extends android.app.Application {
                         .setTitle(EXERCISES_DRIVE_FILE)
                         .setMimeType("application/json")
                         .build();
-                DriveFolder.DriveFileResult driveFileResult = appFolder.createFile(googleApiClient, changeSet, null)
-                        .await();
-                exercisesDriveFile = driveFileResult
+                exercisesDriveFile = appFolder.createFile(googleApiClient, changeSet, null)
+                        .await()
                         .getDriveFile();
-            }
-
-            if (exercisesDriveFile != null) {
-                // register for file updates
-                exercisesDriveFile.addChangeSubscription(googleApiClient);
             }
 
             return exercisesDriveFile;

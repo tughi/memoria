@@ -43,6 +43,15 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.practice_activity, menu);
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.exercises:
@@ -51,15 +60,6 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
-        getMenuInflater().inflate(R.menu.practice_activity, menu);
-
-        return true;
     }
 
     @Override
