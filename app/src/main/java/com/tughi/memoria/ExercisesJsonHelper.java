@@ -31,8 +31,6 @@ public class ExercisesJsonHelper {
             Exercises.COLUMN_NOTES,
             Exercises.COLUMN_PRACTICE_TIME,
             Exercises.COLUMN_RATING,
-            Exercises.COLUMN_SYNC_ID,
-            Exercises.COLUMN_NEW,
     };
     private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_ID;
     private static final int EXERCISE_ID = 0;
@@ -41,7 +39,6 @@ public class ExercisesJsonHelper {
     private static final int EXERCISE_NOTES = 3;
     private static final int EXERCISE_PRACTICE_TIME = 4;
     private static final int EXERCISE_RATING = 5;
-    private static final int EXERCISE_SYNC_ID = 6;
 
     public static void importFromJson(Context context, InputStream input) throws IOException {
         int updates = 0;

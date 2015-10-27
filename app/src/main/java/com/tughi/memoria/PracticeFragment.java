@@ -62,21 +62,22 @@ public abstract class PracticeFragment extends Fragment {
                     rating = exerciseRating + 1;
 
                     long interval = (long) (Math.pow(3, rating - 1));
-                    interval += (long) (interval * (currentTime % 1000 + 1) / 1000.);
+                    interval += interval * (currentTime % 1000 + 1);
 
-                    practiceTime = currentTime / 1000 + interval;
+                    practiceTime = currentTime + interval;
                 } else {
                     rating = Math.round(exerciseRating / 2.3f);
                     practiceTime = 0;
                 }
 
                 ContentValues values = new ContentValues();
+                values.put(Exercises.COLUMN_UPDATED_TIME, currentTime);
                 values.put(Exercises.COLUMN_RATING, rating);
                 values.put(Exercises.COLUMN_PRACTICE_TIME, practiceTime);
                 int result = contentResolver.update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exerciseId), values, null, null);
 
                 if (result > 0) {
-                    Intent intent = new Intent(context, SyncService.class).setAction(SyncService.ACTION_PUSH);
+                    Intent intent = new Intent(context, SyncService.class);
                     PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
                     AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                     alarmManager.set(AlarmManager.RTC, currentTime + AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15, pendingIntent);

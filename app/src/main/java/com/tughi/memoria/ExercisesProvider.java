@@ -31,12 +31,13 @@ public class ExercisesProvider extends ContentProvider {
     static {
         Map<String, String> projection = EXERCISES_PROJECTION_MAP = new HashMap<>();
         projection.put(Exercises.COLUMN_ID, Exercises.COLUMN_ID);
+        projection.put(Exercises.COLUMN_CREATED_TIME, Exercises.COLUMN_CREATED_TIME);
+        projection.put(Exercises.COLUMN_UPDATED_TIME, Exercises.COLUMN_UPDATED_TIME);
         projection.put(Exercises.COLUMN_SCOPE, Exercises.COLUMN_SCOPE);
         projection.put(Exercises.COLUMN_DEFINITION, Exercises.COLUMN_DEFINITION);
         projection.put(Exercises.COLUMN_NOTES, Exercises.COLUMN_NOTES);
         projection.put(Exercises.COLUMN_PRACTICE_TIME, Exercises.COLUMN_PRACTICE_TIME);
         projection.put(Exercises.COLUMN_RATING, Exercises.COLUMN_RATING);
-        projection.put(Exercises.COLUMN_SYNC_ID, Exercises.COLUMN_SYNC_ID);
         projection.put(Exercises.COLUMN_SYNC_TIME, Exercises.COLUMN_SYNC_TIME);
         projection.put(Exercises.COLUMN_NEW, "(" + Exercises.COLUMN_RATING + " = 0) AS " + Exercises.COLUMN_NEW);
     }
@@ -83,6 +84,9 @@ public class ExercisesProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
             case URI_EXERCISES:
                 return insertExercise(values);
+            case URI_EXERCISES_SYNC:
+                replaceExercises(values);
+                return null;
         }
         throw new UnsupportedOperationException("Not supported: " + uri);
     }
@@ -95,28 +99,18 @@ public class ExercisesProvider extends ContentProvider {
         return uri;
     }
 
+    private void replaceExercises(ContentValues values) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        db.replace(TABLE_EXERCISES, null, values);
+    }
+
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         switch (uriMatcher.match(uri)) {
-            case URI_EXERCISES_SYNC:
-                return insertOrUpdateExercises(values, selection, selectionArgs);
             case URI_EXERCISE:
                 return updateExercises(values, AND(Exercises.COLUMN_ID + " = " + uri.getLastPathSegment(), selection), selectionArgs);
         }
         throw new UnsupportedOperationException("Not supported: " + uri);
-    }
-
-    private int insertOrUpdateExercises(ContentValues values, String selection, String[] selectionArgs) {
-        int result;
-
-        SQLiteDatabase db = helper.getWritableDatabase();
-        if (db.insertWithOnConflict(TABLE_EXERCISES, null, values, SQLiteDatabase.CONFLICT_IGNORE) == -1) {
-            result = db.update(TABLE_EXERCISES, values, selection, selectionArgs);
-        } else {
-            result = 1;
-        }
-
-        return result;
     }
 
     private int updateExercises(ContentValues values, String selection, String[] selectionArgs) {
@@ -130,7 +124,16 @@ public class ExercisesProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
+        switch (uriMatcher.match(uri)) {
+            case URI_EXERCISES_SYNC:
+                return deleteExercises(selection, selectionArgs);
+        }
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private int deleteExercises(String selection, String[] selectionArgs) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        return db.delete(TABLE_EXERCISES, selection, selectionArgs);
     }
 
     @Override

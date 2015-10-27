@@ -1,93 +1,172 @@
 package com.tughi.memoria;
 
 import android.app.IntentService;
-import android.content.Context;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.util.Log;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.DriveContents;
-import com.google.android.gms.drive.DriveFile;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MappingJsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-/**
- * Handles the synchronization of the local database with Google Drive.
- */
 public class SyncService extends IntentService {
 
-    public static final String ACTION_PULL = BuildConfig.APPLICATION_ID + ".intent.action.PULL";
-    public static final String ACTION_PUSH = BuildConfig.APPLICATION_ID + ".intent.action.PUSH";
+    private static final String[] EXERCISES_PROJECTION = {
+            Exercises.COLUMN_ID,
+            Exercises.COLUMN_CREATED_TIME,
+            Exercises.COLUMN_UPDATED_TIME,
+            Exercises.COLUMN_SCOPE,
+            Exercises.COLUMN_DEFINITION,
+            Exercises.COLUMN_NOTES,
+            Exercises.COLUMN_RATING,
+            Exercises.COLUMN_PRACTICE_TIME,
+            Exercises.COLUMN_SYNC_TIME,
+    };
+    private static final int EXERCISE_ID = 0;
+    private static final int EXERCISE_CREATED_TIME = 1;
+    private static final int EXERCISE_UPDATED_TIME = 2;
+    private static final int EXERCISE_SCOPE = 3;
+    private static final int EXERCISE_DEFINITION = 4;
+    private static final int EXERCISE_NOTES = 5;
+    private static final int EXERCISE_RATING = 6;
+    private static final int EXERCISE_PRACTICE_TIME = 7;
+    private static final int EXERCISE_SYNC_TIME = 8;
 
-    private GoogleApiClient googleApiClient;
-    private DriveFile exercisesDriveFile;
+    private static final String BASE_URL = "http://192.168.2.106:8081/api/v1/exercises";
+
+    private static final String HTTP_METHOD_GET = "GET";
+    private static final String HTTP_METHOD_POST = "POST";
+    private static final String HTTP_METHOD_PATCH = "PATCH";
 
     public SyncService() {
         super(SyncService.class.getSimpleName());
     }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-
-        Application application = (Application) getApplication();
-        googleApiClient = application.getGoogleApiClient();
-        exercisesDriveFile = application.getExercisesDriveFile();
-    }
-
-    @Override
     protected void onHandleIntent(Intent intent) {
-        if (!googleApiClient.isConnected()) {
-            Log.w(getClass().getName(), "GoogleApiClient is not connected!");
-            return;
-        }
-
-        if (exercisesDriveFile == null) {
-            Log.w(getClass().getName(), "Missing exercises drive file!");
-            return;
-        }
-
         try {
-            String action = intent.getAction();
-            Log.i(getClass().getName(), action);
-            switch (action) {
-                case ACTION_PULL:
-                    handlePull(this, googleApiClient, exercisesDriveFile);
-                    break;
-                case ACTION_PUSH:
-                    handlePush();
-                    break;
-            }
+            uploadExercises();
+
+            downloadExercises();
         } catch (IOException exception) {
-            Log.w(getClass().getName(), "Failed", exception);
+            Log.e(getClass().getName(), "Download failed!", exception);
+        } finally {
+            getContentResolver().notifyChange(Exercises.CONTENT_URI, null);
         }
     }
 
-    public static void handlePull(Context context, GoogleApiClient googleApiClient, DriveFile exercisesDriveFile) throws IOException {
-        DriveContents exercisesContents = exercisesDriveFile.open(googleApiClient, DriveFile.MODE_READ_ONLY, null)
-                .await()
-                .getDriveContents();
+    private void uploadExercises() {
+        String selection = Exercises.COLUMN_SYNC_TIME + " IS NULL OR " + Exercises.COLUMN_SYNC_TIME + " < " + Exercises.COLUMN_UPDATED_TIME;
+        Cursor cursor = getContentResolver().query(Exercises.CONTENT_URI, EXERCISES_PROJECTION, selection, null, null);
+        if (cursor == null) {
+            return;
+        }
 
-        InputStream input = new FileInputStream(exercisesContents.getParcelFileDescriptor().getFileDescriptor());
+        if (cursor.moveToFirst()) {
+            do {
+                try {
+                    HttpURLConnection connection;
+                    if (cursor.isNull(EXERCISE_SYNC_TIME)) {
+                        connection = openConnection(BASE_URL, HTTP_METHOD_POST);
+                    } else {
+                        connection = openConnection(BASE_URL + "/" + cursor.getString(EXERCISE_ID), HTTP_METHOD_PATCH);
+                    }
 
-        ExercisesJsonHelper.importFromJson(context, input);
+                    ServerExercise exercise = new ServerExercise();
+                    exercise.createdTime = cursor.getLong(EXERCISE_CREATED_TIME);
+                    exercise.updatedTime = cursor.getLong(EXERCISE_UPDATED_TIME);
+                    exercise.scope = cursor.getString(EXERCISE_SCOPE);
+                    exercise.definition = cursor.getString(EXERCISE_DEFINITION);
+                    exercise.notes = cursor.getString(EXERCISE_NOTES);
+                    exercise.rating = cursor.getInt(EXERCISE_RATING);
+                    exercise.practiceTime = cursor.getLong(EXERCISE_PRACTICE_TIME);
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.writeValue(connection.getOutputStream(), exercise);
+
+                    JsonNode response = objectMapper.readTree(connection.getInputStream());
+                    Log.d(getClass().getName(), "response: " + response);
+                } catch (IOException exception) {
+                    Log.e(getClass().getName(), "Upload failed!", exception);
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
     }
 
-    private void handlePush() throws IOException {
-        DriveContents exercisesContents = exercisesDriveFile.open(googleApiClient, DriveFile.MODE_WRITE_ONLY, null)
-                .await()
-                .getDriveContents();
+    private void downloadExercises() throws IOException {
+        HttpURLConnection connection = openConnection(BASE_URL, HTTP_METHOD_GET);
 
-        OutputStream output = new FileOutputStream(exercisesContents.getParcelFileDescriptor().getFileDescriptor());
+        InputStream in = connection.getInputStream();
+        try {
+            JsonFactory jsonFactory = new MappingJsonFactory();
+            JsonParser jsonParser = jsonFactory.createParser(in);
 
-        ExercisesJsonHelper.exportToJson(this, output);
+            JsonToken currentJsonToken;
 
-        exercisesContents.commit(googleApiClient, null)
-                .await();
+            currentJsonToken = jsonParser.nextToken();
+            if (currentJsonToken != JsonToken.START_ARRAY) {
+                throw new IOException("The root must be an array");
+            }
+
+            long syncTime = System.currentTimeMillis();
+            ContentResolver contentResolver = getContentResolver();
+
+            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                ServerExercise exercise = jsonParser.readValueAs(ServerExercise.class);
+
+                ContentValues values = new ContentValues();
+                values.put(Exercises.COLUMN_ID, exercise.id);
+                values.put(Exercises.COLUMN_CREATED_TIME, exercise.createdTime);
+                values.put(Exercises.COLUMN_UPDATED_TIME, exercise.updatedTime);
+                values.put(Exercises.COLUMN_SCOPE, exercise.scope);
+                values.put(Exercises.COLUMN_DEFINITION, exercise.definition);
+                values.put(Exercises.COLUMN_NOTES, exercise.notes);
+                values.put(Exercises.COLUMN_RATING, exercise.rating);
+                values.put(Exercises.COLUMN_PRACTICE_TIME, exercise.practiceTime);
+                values.put(Exercises.COLUMN_SYNC_TIME, syncTime);
+
+                contentResolver.insert(Exercises.CONTENT_SYNC_URI, values);
+            }
+
+            String deleteSelection = Exercises.COLUMN_SYNC_TIME + " != CAST(? AS INTEGER)";
+            String[] deleteSelectionArgs = {Long.toString(syncTime)};
+            contentResolver.delete(Exercises.CONTENT_SYNC_URI, deleteSelection, deleteSelectionArgs);
+        } finally {
+            in.close();
+        }
+    }
+
+    private HttpURLConnection openConnection(String url, String method) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod(method);
+        connection.setRequestProperty("Content-Type", "application/json");
+        return connection;
+    }
+
+    private static class ServerExercise {
+        public long id;
+        @JsonProperty("created_time")
+        public long createdTime;
+        @JsonProperty("updated_time")
+        public long updatedTime;
+        public String scope;
+        public String definition;
+        public String notes;
+        public int rating;
+        @JsonProperty("practice_time")
+        public long practiceTime;
     }
 
 }

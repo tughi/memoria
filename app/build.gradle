@@ -34,7 +34,6 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:23.1.0'
-    compile 'com.google.android.gms:play-services-drive:8.1.0'
     compile 'com.tughi.android:sqlite-open-helper:0.5'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.3'
 }

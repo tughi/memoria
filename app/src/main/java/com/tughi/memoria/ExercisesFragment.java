@@ -92,7 +92,7 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add:
-                startActivity(new Intent(getActivity(), EditExerciseActivity.class));
+                startActivity(new Intent(getActivity(), ExerciseEditActivity.class));
                 return true;
             case R.id.import_exercises:
                 Intent importIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
@@ -135,7 +135,7 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
 
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
-        startActivity(new Intent(getActivity(), EditExerciseActivity.class).setData(ContentUris.withAppendedId(Exercises.CONTENT_URI, id)));
+        startActivity(new Intent(getActivity(), ExerciseEditActivity.class).setData(ContentUris.withAppendedId(Exercises.CONTENT_URI, id)));
     }
 
     private class ExercisesAdapter extends BaseAdapter {
@@ -184,7 +184,7 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
             ((TextView) convertView.findViewById(R.id.scope)).setText(cursor.getString(EXERCISE_SCOPE));
             ((TextView) convertView.findViewById(R.id.rating)).setText(Exercises.getRatingText(cursor.getInt(EXERCISE_RATING)));
 
-            long practiceTime = cursor.getLong(EXERCISE_PRACTICE_TIME) * 1000;
+            long practiceTime = cursor.getLong(EXERCISE_PRACTICE_TIME);
             TextView practiceTimeTextView = (TextView) convertView.findViewById(R.id.practice_time);
             if (DateUtils.isToday(practiceTime)) {
                 practiceTimeTextView.setText(DateUtils.formatDateTime(activity, practiceTime, DateUtils.FORMAT_SHOW_TIME));

@@ -31,11 +31,9 @@
             android:label="@string/exercises" />
 
         <activity
-            android:name=".EditExerciseActivity"
+            android:name=".ExerciseEditActivity"
             android:label="@string/exercise"
             android:windowSoftInputMode="stateUnchanged" />
-
-        <activity android:name=".SyncSetupActivity" />
 
         <service android:name=".PracticeReminderService" />
 
