@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SyncService extends IntentService {
 
@@ -76,21 +78,21 @@ public class SyncService extends IntentService {
         if (cursor.moveToFirst()) {
             do {
                 try {
+                    Map<String, Object> exercise = new HashMap<>();
+                    exercise.put(Exercises.COLUMN_UPDATED_TIME, cursor.getLong(EXERCISE_UPDATED_TIME));
+                    exercise.put(Exercises.COLUMN_SCOPE, cursor.getString(EXERCISE_SCOPE));
+                    exercise.put(Exercises.COLUMN_DEFINITION, cursor.getString(EXERCISE_DEFINITION));
+                    exercise.put(Exercises.COLUMN_NOTES, cursor.getString(EXERCISE_NOTES));
+                    exercise.put(Exercises.COLUMN_RATING, cursor.getInt(EXERCISE_RATING));
+                    exercise.put(Exercises.COLUMN_PRACTICE_TIME, cursor.getLong(EXERCISE_PRACTICE_TIME));
+
                     HttpURLConnection connection;
                     if (cursor.isNull(EXERCISE_SYNC_TIME)) {
                         connection = openConnection(BASE_URL, HTTP_METHOD_POST);
+                        exercise.put(Exercises.COLUMN_CREATED_TIME, cursor.getLong(EXERCISE_CREATED_TIME));
                     } else {
                         connection = openConnection(BASE_URL + "/" + cursor.getString(EXERCISE_ID), HTTP_METHOD_PATCH);
                     }
-
-                    ServerExercise exercise = new ServerExercise();
-                    exercise.createdTime = cursor.getLong(EXERCISE_CREATED_TIME);
-                    exercise.updatedTime = cursor.getLong(EXERCISE_UPDATED_TIME);
-                    exercise.scope = cursor.getString(EXERCISE_SCOPE);
-                    exercise.definition = cursor.getString(EXERCISE_DEFINITION);
-                    exercise.notes = cursor.getString(EXERCISE_NOTES);
-                    exercise.rating = cursor.getInt(EXERCISE_RATING);
-                    exercise.practiceTime = cursor.getLong(EXERCISE_PRACTICE_TIME);
 
                     ObjectMapper objectMapper = new ObjectMapper();
                     objectMapper.writeValue(connection.getOutputStream(), exercise);
@@ -157,15 +159,15 @@ public class SyncService extends IntentService {
 
     private static class ServerExercise {
         public long id;
-        @JsonProperty("created_time")
+        @JsonProperty(Exercises.COLUMN_CREATED_TIME)
         public long createdTime;
-        @JsonProperty("updated_time")
+        @JsonProperty(Exercises.COLUMN_UPDATED_TIME)
         public long updatedTime;
         public String scope;
         public String definition;
         public String notes;
         public int rating;
-        @JsonProperty("practice_time")
+        @JsonProperty(Exercises.COLUMN_PRACTICE_TIME)
         public long practiceTime;
     }
 
