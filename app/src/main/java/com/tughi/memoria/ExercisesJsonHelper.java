@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.MappingJsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -121,6 +122,7 @@ public class ExercisesJsonHelper {
             }
 
             JsonGenerator jsonGenerator = new JsonFactory().createGenerator(output);
+            jsonGenerator.setPrettyPrinter(new DefaultPrettyPrinter());
             jsonGenerator.writeStartArray();
 
             if (cursor.moveToFirst()) {
