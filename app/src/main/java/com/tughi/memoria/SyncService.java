@@ -29,6 +29,7 @@ public class SyncService extends IntentService {
             Exercises.COLUMN_CREATED_TIME,
             Exercises.COLUMN_UPDATED_TIME,
             Exercises.COLUMN_SCOPE,
+            Exercises.COLUMN_SCOPE_LETTERS,
             Exercises.COLUMN_DEFINITION,
             Exercises.COLUMN_NOTES,
             Exercises.COLUMN_RATING,
@@ -39,11 +40,12 @@ public class SyncService extends IntentService {
     private static final int EXERCISE_CREATED_TIME = 1;
     private static final int EXERCISE_UPDATED_TIME = 2;
     private static final int EXERCISE_SCOPE = 3;
-    private static final int EXERCISE_DEFINITION = 4;
-    private static final int EXERCISE_NOTES = 5;
-    private static final int EXERCISE_RATING = 6;
-    private static final int EXERCISE_PRACTICE_TIME = 7;
-    private static final int EXERCISE_SYNC_TIME = 8;
+    private static final int EXERCISE_SCOPE_LETTERS = 4;
+    private static final int EXERCISE_DEFINITION = 5;
+    private static final int EXERCISE_NOTES = 6;
+    private static final int EXERCISE_RATING = 7;
+    private static final int EXERCISE_PRACTICE_TIME = 8;
+    private static final int EXERCISE_SYNC_TIME = 9;
 
     private static final String BASE_URL = "http://192.168.2.106:8081/api/v1/exercises";
 
@@ -81,6 +83,7 @@ public class SyncService extends IntentService {
                     Map<String, Object> exercise = new HashMap<>();
                     exercise.put(Exercises.COLUMN_UPDATED_TIME, cursor.getLong(EXERCISE_UPDATED_TIME));
                     exercise.put(Exercises.COLUMN_SCOPE, cursor.getString(EXERCISE_SCOPE));
+                    exercise.put(Exercises.COLUMN_SCOPE_LETTERS, cursor.getString(EXERCISE_SCOPE_LETTERS));
                     exercise.put(Exercises.COLUMN_DEFINITION, cursor.getString(EXERCISE_DEFINITION));
                     exercise.put(Exercises.COLUMN_NOTES, cursor.getString(EXERCISE_NOTES));
                     exercise.put(Exercises.COLUMN_RATING, cursor.getInt(EXERCISE_RATING));
@@ -125,14 +128,15 @@ public class SyncService extends IntentService {
             long syncTime = System.currentTimeMillis();
             ContentResolver contentResolver = getContentResolver();
 
+            ContentValues values = new ContentValues();
             while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
                 ServerExercise exercise = jsonParser.readValueAs(ServerExercise.class);
 
-                ContentValues values = new ContentValues();
                 values.put(Exercises.COLUMN_ID, exercise.id);
                 values.put(Exercises.COLUMN_CREATED_TIME, exercise.createdTime);
                 values.put(Exercises.COLUMN_UPDATED_TIME, exercise.updatedTime);
                 values.put(Exercises.COLUMN_SCOPE, exercise.scope);
+                values.put(Exercises.COLUMN_SCOPE_LETTERS, exercise.scopeLetters);
                 values.put(Exercises.COLUMN_DEFINITION, exercise.definition);
                 values.put(Exercises.COLUMN_NOTES, exercise.notes);
                 values.put(Exercises.COLUMN_RATING, exercise.rating);
@@ -140,6 +144,8 @@ public class SyncService extends IntentService {
                 values.put(Exercises.COLUMN_SYNC_TIME, syncTime);
 
                 contentResolver.insert(Exercises.CONTENT_SYNC_URI, values);
+
+                values.clear();
             }
 
             String deleteSelection = Exercises.COLUMN_SYNC_TIME + " != CAST(? AS INTEGER)";
@@ -158,17 +164,29 @@ public class SyncService extends IntentService {
     }
 
     private static class ServerExercise {
+
         public long id;
+
         @JsonProperty(Exercises.COLUMN_CREATED_TIME)
         public long createdTime;
+
         @JsonProperty(Exercises.COLUMN_UPDATED_TIME)
         public long updatedTime;
+
         public String scope;
+
+        @JsonProperty(Exercises.COLUMN_SCOPE_LETTERS)
+        public String scopeLetters;
+
         public String definition;
+
         public String notes;
+
         public int rating;
+
         @JsonProperty(Exercises.COLUMN_PRACTICE_TIME)
         public long practiceTime;
+
     }
 
 }

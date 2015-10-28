@@ -28,6 +28,7 @@ public class ExercisesJsonHelper {
     private static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
             Exercises.COLUMN_SCOPE,
+            Exercises.COLUMN_SCOPE_LETTERS,
             Exercises.COLUMN_DEFINITION,
             Exercises.COLUMN_NOTES,
             Exercises.COLUMN_PRACTICE_TIME,
@@ -36,10 +37,11 @@ public class ExercisesJsonHelper {
     private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_ID;
     private static final int EXERCISE_ID = 0;
     private static final int EXERCISE_SCOPE = 1;
-    private static final int EXERCISE_DEFINITION = 2;
-    private static final int EXERCISE_NOTES = 3;
-    private static final int EXERCISE_PRACTICE_TIME = 4;
-    private static final int EXERCISE_RATING = 5;
+    private static final int EXERCISE_SCOPE_LETTERS = 2;
+    private static final int EXERCISE_DEFINITION = 3;
+    private static final int EXERCISE_NOTES = 4;
+    private static final int EXERCISE_PRACTICE_TIME = 5;
+    private static final int EXERCISE_RATING = 6;
 
     public static void importFromJson(Context context, InputStream input) throws IOException {
         int updates = 0;
@@ -67,6 +69,7 @@ public class ExercisesJsonHelper {
                 ContentValues values = new ContentValues();
                 values.put(Exercises.COLUMN_ID, exercise.id);
                 values.put(Exercises.COLUMN_SCOPE, exercise.scope);
+                values.put(Exercises.COLUMN_SCOPE_LETTERS, exercise.scopeLetters);
                 values.put(Exercises.COLUMN_DEFINITION, exercise.definition);
                 values.put(Exercises.COLUMN_NOTES, exercise.notes);
                 values.put(Exercises.COLUMN_RATING, exercise.rating);
@@ -131,6 +134,7 @@ public class ExercisesJsonHelper {
                 do {
                     exercise.id = cursor.getLong(EXERCISE_ID);
                     exercise.scope = cursor.getString(EXERCISE_SCOPE);
+                    exercise.scopeLetters = cursor.getString(EXERCISE_SCOPE_LETTERS);
                     exercise.definition = cursor.getString(EXERCISE_DEFINITION);
                     exercise.notes = cursor.getString(EXERCISE_NOTES);
                     exercise.rating = cursor.getInt(EXERCISE_RATING);
@@ -178,6 +182,7 @@ public class ExercisesJsonHelper {
     private static class Exercise {
         public long id;
         public String scope;
+        public String scopeLetters;
         public String definition;
         public String notes;
         public int rating;

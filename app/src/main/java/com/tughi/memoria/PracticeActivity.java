@@ -17,6 +17,7 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
     private static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
             Exercises.COLUMN_SCOPE,
+            Exercises.COLUMN_SCOPE_LETTERS,
             Exercises.COLUMN_DEFINITION,
             Exercises.COLUMN_RATING,
             Exercises.COLUMN_NEW,
@@ -24,8 +25,9 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
     private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_NEW + ", " + Exercises.COLUMN_PRACTICE_TIME;
     private static final int EXERCISE_ID = 0;
     private static final int EXERCISE_SCOPE = 1;
-    private static final int EXERCISE_DEFINITION = 2;
-    private static final int EXERCISE_RATING = 3;
+    private static final int EXERCISE_SCOPE_LETTERS = 2;
+    private static final int EXERCISE_DEFINITION = 3;
+    private static final int EXERCISE_RATING = 4;
 
     private Cursor exercisesCursor;
 
@@ -76,6 +78,7 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
             Bundle args = new Bundle();
             args.putLong(Exercises.COLUMN_ID, exercisesCursor.getLong(EXERCISE_ID));
             args.putString(Exercises.COLUMN_SCOPE, exercisesCursor.getString(EXERCISE_SCOPE));
+            args.putString(Exercises.COLUMN_SCOPE_LETTERS, exercisesCursor.getString(EXERCISE_SCOPE_LETTERS));
             args.putString(Exercises.COLUMN_DEFINITION, exercisesCursor.getString(EXERCISE_DEFINITION));
             args.putInt(Exercises.COLUMN_RATING, exerciseRating);
 

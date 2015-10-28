@@ -107,6 +107,15 @@ public class ExerciseEditActivity extends AppCompatActivity implements LoaderMan
 
         @Override
         protected Boolean doInBackground(Object... params) {
+            String scope = values.getAsString(Exercises.COLUMN_SCOPE);
+            StringBuilder scopeLetters = new StringBuilder(scope.length());
+            for (char c : scope.toCharArray()) {
+                if (Character.isLetterOrDigit(c)) {
+                    scopeLetters.append(c);
+                }
+            }
+            values.put(Exercises.COLUMN_SCOPE_LETTERS, scopeLetters.toString());
+
             try {
                 ContentResolver contentResolver = context.getContentResolver();
                 Uri uri = exerciseUri;

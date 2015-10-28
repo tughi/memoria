@@ -11,6 +11,7 @@ public class Exercises {
     public static final String COLUMN_CREATED_TIME = "created_time";
     public static final String COLUMN_UPDATED_TIME = "updated_time";
     public static final String COLUMN_SCOPE = "scope";
+    public static final String COLUMN_SCOPE_LETTERS = "scope_letters";
     public static final String COLUMN_DEFINITION = "definition";
     public static final String COLUMN_NOTES = "notes";
     public static final String COLUMN_PRACTICE_TIME = "practice_time";

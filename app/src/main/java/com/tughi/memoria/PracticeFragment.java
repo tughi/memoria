@@ -19,6 +19,7 @@ public abstract class PracticeFragment extends Fragment {
 
     private long exerciseId;
     private String exerciseScope;
+    private String exerciseScopeLetters;
     private String exerciseDefinition;
     private int exerciseRating;
 
@@ -41,6 +42,7 @@ public abstract class PracticeFragment extends Fragment {
         Bundle arguments = getArguments();
         exerciseId = arguments.getLong(Exercises.COLUMN_ID);
         exerciseScope = arguments.getString(Exercises.COLUMN_SCOPE);
+        exerciseScopeLetters = arguments.getString(Exercises.COLUMN_SCOPE_LETTERS);
         exerciseDefinition = arguments.getString(Exercises.COLUMN_DEFINITION);
         exerciseRating = arguments.getInt(Exercises.COLUMN_RATING);
     }
@@ -91,19 +93,13 @@ public abstract class PracticeFragment extends Fragment {
     }
 
     private boolean checkAnswer(String answerScope) {
-        StringBuilder exercise = new StringBuilder(exerciseScope.length());
-        for (char c : exerciseScope.toCharArray()) {
-            if (Character.isLetterOrDigit(c)) {
-                exercise.append(c);
-            }
-        }
         StringBuilder answer = new StringBuilder(answerScope.length());
         for (char c : answerScope.toCharArray()) {
             if (Character.isLetterOrDigit(c)) {
                 answer.append(c);
             }
         }
-        return exercise.toString().equals(answer.toString());
+        return exerciseScopeLetters.equals(answer.toString());
     }
 
 }
