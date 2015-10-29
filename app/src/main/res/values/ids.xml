@@ -2,4 +2,7 @@
 <resources>
     <item name="practice_notification" type="id" />
     <item name="google_drive_access_notification" type="id" />
+
+    <item name="answer_button_solution" type="id" />
+    <item name="answer_button_exercise" type="id" />
 </resources>

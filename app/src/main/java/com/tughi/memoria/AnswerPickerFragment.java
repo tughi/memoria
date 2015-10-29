@@ -19,15 +19,6 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
 
     public static final String ARG_INVERT = "invert";
 
-    private static final String[] EXERCISES_PROJECTION = {
-            Exercises.COLUMN_ID,
-            Exercises.COLUMN_SCOPE,
-            Exercises.COLUMN_DEFINITION,
-    };
-    private static final int EXERCISE_ID = 0;
-    private static final int EXERCISE_SCOPE = 1;
-    private static final int EXERCISE_DEFINITION = 2;
-
     private boolean invert;
     private boolean loaded;
 
@@ -35,8 +26,6 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
     private AnswerButton answer2Button;
     private AnswerButton answer3Button;
     private AnswerButton answer4Button;
-
-    private AnswerButton correctAnswerButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,11 +39,13 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.answer_picker_fragment, container, false);
 
+        PracticeExercise exercise = getExercise();
+
         TextView ratingTextView = (TextView) view.findViewById(R.id.rating);
-        ratingTextView.setText(Exercises.getRatingText(getExerciseRating()));
+        ratingTextView.setText(Exercises.getRatingText(exercise.rating));
 
         TextView questionTextView = (TextView) view.findViewById(R.id.question);
-        questionTextView.setText(getArguments().getString(invert ? Exercises.COLUMN_DEFINITION : Exercises.COLUMN_SCOPE));
+        questionTextView.setText(invert ? exercise.definition : exercise.scope);
 
         answer1Button = (AnswerButton) view.findViewById(R.id.answer_1);
         answer1Button.setOnClickListener(this);
@@ -72,7 +63,7 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(100, null, this);
     }
 
     @Override
@@ -91,19 +82,32 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
             answerButtons.add(answer3Button);
             answerButtons.add(answer4Button);
 
-            correctAnswerButton = answerButtons.remove(random.nextInt(answerButtons.size()));
-            correctAnswerButton.setBackgroundResource(R.drawable.correct_picker_button);
-            correctAnswerButton.setText(invert ? getExerciseScope() : getExerciseDefinition());
-            correctAnswerButton.setTag(getExerciseScope());
+            PracticeExercise exercise = getExercise();
+
+            AnswerButton answerButton = answerButtons.remove(random.nextInt(answerButtons.size()));
+            answerButton.setBackgroundResource(R.drawable.correct_picker_button);
+            answerButton.setText(invert ? exercise.scope : exercise.definition);
+            answerButton.setTag(R.id.answer_button_solution, true);
+            answerButton.setTag(R.id.answer_button_exercise, exercise);
 
             int count = cursor.getCount();
             while (!answerButtons.isEmpty()) {
                 int wrongPosition = random.nextInt(count);
                 if (cursor.moveToPosition(wrongPosition) && cursor.getLong(EXERCISE_ID) != getArguments().getLong(Exercises.COLUMN_ID)) {
-                    AnswerButton answerButton = answerButtons.remove(random.nextInt(answerButtons.size()));
-                    answerButton.setBackgroundResource(R.drawable.wrong_picker_button);
-                    answerButton.setText(cursor.getString(invert ? EXERCISE_SCOPE : EXERCISE_DEFINITION));
-                    answerButton.setTag(cursor.getString(EXERCISE_SCOPE));
+                    PracticeExercise answer = new PracticeExercise(
+                            cursor.getLong(EXERCISE_ID),
+                            cursor.getString(EXERCISE_SCOPE),
+                            cursor.getString(EXERCISE_SCOPE_LETTERS),
+                            cursor.getString(EXERCISE_DEFINITION),
+                            cursor.getInt(EXERCISE_RATING)
+                    );
+
+                    answerButton = answerButtons.remove(random.nextInt(answerButtons.size()));
+                    boolean solution = exercise.definition.equals(answer.definition);
+                    answerButton.setBackgroundResource(solution ? R.drawable.correct_picker_button : R.drawable.wrong_picker_button);
+                    answerButton.setText(invert ? answer.scope : answer.definition);
+                    answerButton.setTag(R.id.answer_button_solution, solution);
+                    answerButton.setTag(R.id.answer_button_exercise, answer);
                 }
             }
 
@@ -118,9 +122,26 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
 
     @Override
     public void onClick(View view) {
-        final boolean correct = submitAnswer((String) view.getTag());
-        if (!correct) {
-            correctAnswerButton.setChecked(true);
+        Boolean solution = (Boolean) view.getTag(R.id.answer_button_solution);
+        PracticeExercise answer = (PracticeExercise) view.getTag(R.id.answer_button_exercise);
+
+        submitAnswer(solution == Boolean.TRUE ? answer : null);
+
+        if (!solution) {
+            if (answer1Button.getTag(R.id.answer_button_solution) == Boolean.TRUE) {
+                answer1Button.setChecked(true);
+            }
+            if (answer2Button.getTag(R.id.answer_button_solution) == Boolean.TRUE) {
+                answer2Button.setChecked(true);
+            }
+            if (answer3Button.getTag(R.id.answer_button_solution) == Boolean.TRUE) {
+                answer3Button.setChecked(true);
+            }
+            if (answer4Button.getTag(R.id.answer_button_solution) == Boolean.TRUE) {
+                answer4Button.setChecked(true);
+            }
+
+            // TODO: reduce the rating for the wrong answer too
         }
 
         answer1Button.setEnabled(false);
@@ -128,7 +149,7 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
         answer3Button.setEnabled(false);
         answer4Button.setEnabled(false);
 
-        ((PracticeActivity) getActivity()).continuePractice(correct ? PRACTICE_NORMAL : PRACTICE_DELAYED);
+        ((PracticeActivity) getActivity()).continuePractice(solution ? PRACTICE_NORMAL : PRACTICE_DELAYED);
     }
 
 }

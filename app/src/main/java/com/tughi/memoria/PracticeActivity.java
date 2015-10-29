@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -73,23 +75,28 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
     }
 
     private void replacePracticeFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
         if (exercisesCursor != null && exercisesCursor.moveToFirst()) {
-            final int exerciseRating = exercisesCursor.getInt(EXERCISE_RATING);
+            PracticeExercise practiceExercise = new PracticeExercise(
+                    exercisesCursor.getLong(EXERCISE_ID),
+                    exercisesCursor.getString(EXERCISE_SCOPE),
+                    exercisesCursor.getString(EXERCISE_SCOPE_LETTERS),
+                    exercisesCursor.getString(EXERCISE_DEFINITION),
+                    exercisesCursor.getInt(EXERCISE_RATING)
+            );
 
             Bundle args = new Bundle();
-            args.putLong(Exercises.COLUMN_ID, exercisesCursor.getLong(EXERCISE_ID));
-            args.putString(Exercises.COLUMN_SCOPE, exercisesCursor.getString(EXERCISE_SCOPE));
-            args.putString(Exercises.COLUMN_SCOPE_LETTERS, exercisesCursor.getString(EXERCISE_SCOPE_LETTERS));
-            args.putString(Exercises.COLUMN_DEFINITION, exercisesCursor.getString(EXERCISE_DEFINITION));
-            args.putInt(Exercises.COLUMN_RATING, exerciseRating);
+            args.putParcelable(PracticeFragment.ARG_EXERCISE, practiceExercise);
 
             PracticeFragment practiceFragment;
-            switch (exerciseRating % 5) {
+            final int exerciseType = practiceExercise.rating % 5;
+            switch (exerciseType) {
                 case 4:
                     practiceFragment = new AnswerInputFragment();
                     break;
                 case 3:
-                    args.putBoolean(AnswerPickerFragment.ARG_INVERT, exerciseRating == 3);
+                    args.putBoolean(AnswerPickerFragment.ARG_INVERT, true);
                 case 2:
                 case 1:
                 default:
@@ -98,12 +105,17 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
             }
             practiceFragment.setArguments(args);
 
-            getSupportFragmentManager()
-                    .beginTransaction()
+            fragmentManager.beginTransaction()
                     .replace(R.id.content, practiceFragment)
-                    .commit();
+                    .commitAllowingStateLoss();
         } else {
             // TODO: handle the case where no exercises are left to practice on
+            Fragment fragment = fragmentManager.findFragmentById(R.id.content);
+            if (fragment != null) {
+                fragmentManager.beginTransaction()
+                        .remove(fragment)
+                        .commitAllowingStateLoss();
+            }
         }
     }
 
