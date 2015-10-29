@@ -84,23 +84,18 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
             args.putInt(Exercises.COLUMN_RATING, exerciseRating);
 
             PracticeFragment practiceFragment;
-            if (exercisesCursor.getCount() > 10) {
-                switch (exerciseRating % 5) {
-                    case 4:
-                        practiceFragment = new AnswerInputFragment();
-                        break;
-                    case 3:
-                        args.putBoolean(AnswerPickerFragment.ARG_INVERT, exerciseRating == 3);
-                    case 2:
-                    case 1:
-                    default:
-                        practiceFragment = new AnswerPickerFragment();
-                        break;
-                }
-            } else {
-                practiceFragment = new AnswerInputFragment();
+            switch (exerciseRating % 5) {
+                case 4:
+                    practiceFragment = new AnswerInputFragment();
+                    break;
+                case 3:
+                    args.putBoolean(AnswerPickerFragment.ARG_INVERT, exerciseRating == 3);
+                case 2:
+                case 1:
+                default:
+                    practiceFragment = new AnswerPickerFragment();
+                    break;
             }
-
             practiceFragment.setArguments(args);
 
             getSupportFragmentManager()
