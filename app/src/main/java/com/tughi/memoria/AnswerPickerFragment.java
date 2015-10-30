@@ -107,7 +107,7 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
                     answerButton.setBackgroundResource(solution ? R.drawable.correct_picker_button : R.drawable.wrong_picker_button);
                     answerButton.setText(invert ? answer.scope : answer.definition);
                     answerButton.setTag(R.id.answer_button_solution, solution);
-                    answerButton.setTag(R.id.answer_button_exercise, answer);
+                    answerButton.setTag(R.id.answer_button_exercise, invert ? answer : exercise);
                 }
             }
 

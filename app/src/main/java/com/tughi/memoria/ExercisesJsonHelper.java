@@ -27,6 +27,8 @@ public class ExercisesJsonHelper {
 
     private static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
+            Exercises.COLUMN_CREATED_TIME,
+            Exercises.COLUMN_UPDATED_TIME,
             Exercises.COLUMN_SCOPE,
             Exercises.COLUMN_SCOPE_LETTERS,
             Exercises.COLUMN_DEFINITION,
@@ -36,12 +38,14 @@ public class ExercisesJsonHelper {
     };
     private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_ID;
     private static final int EXERCISE_ID = 0;
-    private static final int EXERCISE_SCOPE = 1;
-    private static final int EXERCISE_SCOPE_LETTERS = 2;
-    private static final int EXERCISE_DEFINITION = 3;
-    private static final int EXERCISE_NOTES = 4;
-    private static final int EXERCISE_PRACTICE_TIME = 5;
-    private static final int EXERCISE_RATING = 6;
+    private static final int EXERCISE_CREATED_TIME = 1;
+    private static final int EXERCISE_UPDATED_TIME = 2;
+    private static final int EXERCISE_SCOPE = 3;
+    private static final int EXERCISE_SCOPE_LETTERS = 4;
+    private static final int EXERCISE_DEFINITION = 5;
+    private static final int EXERCISE_NOTES = 6;
+    private static final int EXERCISE_PRACTICE_TIME = 7;
+    private static final int EXERCISE_RATING = 8;
 
     public static void importFromJson(Context context, InputStream input) throws IOException {
         int updates = 0;
@@ -68,6 +72,8 @@ public class ExercisesJsonHelper {
 
                 ContentValues values = new ContentValues();
                 values.put(Exercises.COLUMN_ID, exercise.id);
+                values.put(Exercises.COLUMN_CREATED_TIME, exercise.createdTime);
+                values.put(Exercises.COLUMN_UPDATED_TIME, exercise.updatedTime);
                 values.put(Exercises.COLUMN_SCOPE, exercise.scope);
                 values.put(Exercises.COLUMN_SCOPE_LETTERS, exercise.scopeLetters);
                 values.put(Exercises.COLUMN_DEFINITION, exercise.definition);
@@ -133,6 +139,8 @@ public class ExercisesJsonHelper {
                 Exercise exercise = new Exercise();
                 do {
                     exercise.id = cursor.getLong(EXERCISE_ID);
+                    exercise.createdTime = cursor.getLong(EXERCISE_CREATED_TIME);
+                    exercise.updatedTime = cursor.getLong(EXERCISE_UPDATED_TIME);
                     exercise.scope = cursor.getString(EXERCISE_SCOPE);
                     exercise.scopeLetters = cursor.getString(EXERCISE_SCOPE_LETTERS);
                     exercise.definition = cursor.getString(EXERCISE_DEFINITION);
@@ -181,6 +189,8 @@ public class ExercisesJsonHelper {
 
     private static class Exercise {
         public long id;
+        public long createdTime;
+        public long updatedTime;
         public String scope;
         public String scopeLetters;
         public String definition;
