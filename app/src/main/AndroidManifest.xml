@@ -35,6 +35,10 @@
             android:label="@string/exercise"
             android:windowSoftInputMode="stateUnchanged" />
 
+        <activity
+            android:name=".PreferencesActivity"
+            android:label="@string/preferences" />
+
         <service android:name=".PracticeReminderService" />
 
         <service android:name=".SyncService" />

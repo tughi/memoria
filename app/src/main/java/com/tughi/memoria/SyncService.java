@@ -4,7 +4,9 @@ import android.app.IntentService;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,7 +49,7 @@ public class SyncService extends IntentService {
     private static final int EXERCISE_PRACTICE_TIME = 8;
     private static final int EXERCISE_SYNC_TIME = 9;
 
-    private static final String BASE_URL = "http://192.168.2.106:8081/api/v1/exercises";
+    private static final String BASE_URL_PATH = "/api/v1/exercises";
 
     private static final String HTTP_METHOD_GET = "GET";
     private static final String HTTP_METHOD_POST = "POST";
@@ -59,10 +61,17 @@ public class SyncService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        try {
-            uploadExercises();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String serverUrl = preferences.getString(PreferencesActivity.PREFERENCE_SERVER_URL, null);
+        if (serverUrl == null) {
+            // sync disabled
+            return;
+        }
 
-            downloadExercises();
+        try {
+            uploadExercises(serverUrl);
+
+            downloadExercises(serverUrl);
         } catch (IOException exception) {
             Log.e(getClass().getName(), "Download failed!", exception);
         } finally {
@@ -70,7 +79,7 @@ public class SyncService extends IntentService {
         }
     }
 
-    private void uploadExercises() {
+    private void uploadExercises(String serverUrl) {
         String selection = Exercises.COLUMN_SYNC_TIME + " IS NULL OR " + Exercises.COLUMN_SYNC_TIME + " < " + Exercises.COLUMN_UPDATED_TIME;
         Cursor cursor = getContentResolver().query(Exercises.CONTENT_URI, EXERCISES_PROJECTION, selection, null, null);
         if (cursor == null) {
@@ -91,10 +100,10 @@ public class SyncService extends IntentService {
 
                     HttpURLConnection connection;
                     if (cursor.isNull(EXERCISE_SYNC_TIME)) {
-                        connection = openConnection(BASE_URL, HTTP_METHOD_POST);
+                        connection = openConnection(serverUrl + BASE_URL_PATH, HTTP_METHOD_POST);
                         exercise.put(Exercises.COLUMN_CREATED_TIME, cursor.getLong(EXERCISE_CREATED_TIME));
                     } else {
-                        connection = openConnection(BASE_URL + "/" + cursor.getString(EXERCISE_ID), HTTP_METHOD_PATCH);
+                        connection = openConnection(serverUrl + BASE_URL_PATH + "/" + cursor.getString(EXERCISE_ID), HTTP_METHOD_PATCH);
                     }
 
                     ObjectMapper objectMapper = new ObjectMapper();
@@ -110,8 +119,8 @@ public class SyncService extends IntentService {
         cursor.close();
     }
 
-    private void downloadExercises() throws IOException {
-        HttpURLConnection connection = openConnection(BASE_URL, HTTP_METHOD_GET);
+    private void downloadExercises(String serverUrl) throws IOException {
+        HttpURLConnection connection = openConnection(serverUrl + BASE_URL_PATH, HTTP_METHOD_GET);
 
         InputStream in = connection.getInputStream();
         try {

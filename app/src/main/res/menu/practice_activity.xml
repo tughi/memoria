@@ -6,4 +6,7 @@
         android:icon="@drawable/ic_action_list"
         android:title="@string/exercises"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/preferences"
+        android:title="@string/preferences" />
 </menu>

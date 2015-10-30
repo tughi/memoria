@@ -62,6 +62,9 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
             case R.id.exercises:
                 startActivity(new Intent(this, ExercisesActivity.class));
                 return true;
+            case R.id.preferences:
+                startActivity(new Intent(this, PreferencesActivity.class));
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

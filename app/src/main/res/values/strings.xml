@@ -13,4 +13,7 @@
     <string name="answer">Answer</string>
     <string name="practice_time">Practice time</string>
     <string name="practice_exercises">You are behind with %1$d exercises.</string>
+    <string name="preferences">Preferences</string>
+    <string name="server_url">Server URL</string>
+    <string name="none">None</string>
 </resources>
