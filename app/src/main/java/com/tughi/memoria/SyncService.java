@@ -26,6 +26,8 @@ import java.util.Map;
 
 public class SyncService extends IntentService {
 
+    private static final String SERVICE_NAME = SyncService.class.getSimpleName();
+
     private static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
             Exercises.COLUMN_CREATED_TIME,
@@ -55,8 +57,19 @@ public class SyncService extends IntentService {
     private static final String HTTP_METHOD_POST = "POST";
     private static final String HTTP_METHOD_PATCH = "PATCH";
 
+    private static final String PREFERENCE_EXERCISES_ETAG = "exercises_etag";
+
+    private SharedPreferences preferences;
+
     public SyncService() {
-        super(SyncService.class.getSimpleName());
+        super(SERVICE_NAME);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        preferences = getSharedPreferences(SERVICE_NAME, MODE_PRIVATE);
     }
 
     @Override
@@ -122,46 +135,70 @@ public class SyncService extends IntentService {
     private void downloadExercises(String serverUrl) throws IOException {
         HttpURLConnection connection = openConnection(serverUrl + BASE_URL_PATH, HTTP_METHOD_GET);
 
-        InputStream in = connection.getInputStream();
+        String exercisesETag = preferences.getString(PREFERENCE_EXERCISES_ETAG, null);
+        if (exercisesETag != null) {
+            connection.addRequestProperty("If-None-Match", exercisesETag);
+        }
+
         try {
-            JsonFactory jsonFactory = new MappingJsonFactory();
-            JsonParser jsonParser = jsonFactory.createParser(in);
-
-            JsonToken currentJsonToken;
-
-            currentJsonToken = jsonParser.nextToken();
-            if (currentJsonToken != JsonToken.START_ARRAY) {
-                throw new IOException("The root must be an array");
+            int responseCode = connection.getResponseCode();
+            switch (responseCode) {
+                case HttpURLConnection.HTTP_OK:
+                    break;
+                case HttpURLConnection.HTTP_NOT_MODIFIED:
+                    // sync not required
+                    return;
+                default:
+                    throw new IOException("Unexpected response code: (" + responseCode + ") " + connection.getResponseMessage());
             }
 
-            long syncTime = System.currentTimeMillis();
-            ContentResolver contentResolver = getContentResolver();
+            InputStream in = connection.getInputStream();
+            try {
+                JsonFactory jsonFactory = new MappingJsonFactory();
+                JsonParser jsonParser = jsonFactory.createParser(in);
 
-            ContentValues values = new ContentValues();
-            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
-                ServerExercise exercise = jsonParser.readValueAs(ServerExercise.class);
+                JsonToken currentJsonToken;
 
-                values.put(Exercises.COLUMN_ID, exercise.id);
-                values.put(Exercises.COLUMN_CREATED_TIME, exercise.createdTime);
-                values.put(Exercises.COLUMN_UPDATED_TIME, exercise.updatedTime);
-                values.put(Exercises.COLUMN_SCOPE, exercise.scope);
-                values.put(Exercises.COLUMN_SCOPE_LETTERS, exercise.scopeLetters);
-                values.put(Exercises.COLUMN_DEFINITION, exercise.definition);
-                values.put(Exercises.COLUMN_NOTES, exercise.notes);
-                values.put(Exercises.COLUMN_RATING, exercise.rating);
-                values.put(Exercises.COLUMN_PRACTICE_TIME, exercise.practiceTime);
-                values.put(Exercises.COLUMN_SYNC_TIME, syncTime);
+                currentJsonToken = jsonParser.nextToken();
+                if (currentJsonToken != JsonToken.START_ARRAY) {
+                    throw new IOException("The root must be an array");
+                }
 
-                contentResolver.insert(Exercises.CONTENT_SYNC_URI, values);
+                long syncTime = System.currentTimeMillis();
+                ContentResolver contentResolver = getContentResolver();
 
-                values.clear();
+                ContentValues values = new ContentValues();
+                while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                    ServerExercise exercise = jsonParser.readValueAs(ServerExercise.class);
+
+                    values.put(Exercises.COLUMN_ID, exercise.id);
+                    values.put(Exercises.COLUMN_CREATED_TIME, exercise.createdTime);
+                    values.put(Exercises.COLUMN_UPDATED_TIME, exercise.updatedTime);
+                    values.put(Exercises.COLUMN_SCOPE, exercise.scope);
+                    values.put(Exercises.COLUMN_SCOPE_LETTERS, exercise.scopeLetters);
+                    values.put(Exercises.COLUMN_DEFINITION, exercise.definition);
+                    values.put(Exercises.COLUMN_NOTES, exercise.notes);
+                    values.put(Exercises.COLUMN_RATING, exercise.rating);
+                    values.put(Exercises.COLUMN_PRACTICE_TIME, exercise.practiceTime);
+                    values.put(Exercises.COLUMN_SYNC_TIME, syncTime);
+
+                    contentResolver.insert(Exercises.CONTENT_SYNC_URI, values);
+
+                    values.clear();
+                }
+
+                String deleteSelection = Exercises.COLUMN_SYNC_TIME + " != CAST(? AS INTEGER)";
+                String[] deleteSelectionArgs = {Long.toString(syncTime)};
+                contentResolver.delete(Exercises.CONTENT_SYNC_URI, deleteSelection, deleteSelectionArgs);
+            } finally {
+                in.close();
             }
 
-            String deleteSelection = Exercises.COLUMN_SYNC_TIME + " != CAST(? AS INTEGER)";
-            String[] deleteSelectionArgs = {Long.toString(syncTime)};
-            contentResolver.delete(Exercises.CONTENT_SYNC_URI, deleteSelection, deleteSelectionArgs);
+            preferences.edit()
+                    .putString(PREFERENCE_EXERCISES_ETAG, connection.getHeaderField("ETag"))
+                    .apply();
         } finally {
-            in.close();
+            connection.disconnect();
         }
     }
 
