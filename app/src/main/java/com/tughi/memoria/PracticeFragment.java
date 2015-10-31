@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public abstract class PracticeFragment extends Fragment {
 
@@ -18,8 +21,8 @@ public abstract class PracticeFragment extends Fragment {
     public static final String ARG_EXERCISE = "exercise";
 
     public static final int PRACTICE_IMMEDIATELY = 0;
-    public static final int PRACTICE_NORMAL = 500;
-    public static final int PRACTICE_DELAYED = 1500;
+    public static final int PRACTICE_NORMAL = 750;
+    public static final int PRACTICE_DELAYED = 2500;
 
     protected static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
@@ -46,6 +49,36 @@ public abstract class PracticeFragment extends Fragment {
 
         Bundle arguments = getArguments();
         exercise = arguments.getParcelable(ARG_EXERCISE);
+
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.practice_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.skip:
+                int newRating = exercise.rating - 1;
+                long newPracticeTime = System.currentTimeMillis() + 60 * 60 * 1000;
+
+                new UpdateExerciseTask(getActivity()) {
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        continuePractice(100);
+                    }
+                }.execute(exercise, newRating, newPracticeTime);
+
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    protected void continuePractice(int when) {
+        ((PracticeActivity) getActivity()).continuePractice(when);
     }
 
     protected void submitAnswer(PracticeExercise solution) {
@@ -57,49 +90,59 @@ public abstract class PracticeFragment extends Fragment {
             }
         }
 
-        new AsyncTask<Object, Void, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Object... params) {
-                final Context context = (Context) params[0];
-                final PracticeExercise exercise = (PracticeExercise) params[1];
-                final PracticeExercise solution = (PracticeExercise) params[2];
+        final long currentTime = System.currentTimeMillis();
 
-                final long currentTime = System.currentTimeMillis();
+        final int newRating;
+        final long newPracticeTime;
+        if (solution == null) {
+            newRating = Math.round(exercise.rating / 2.3f);
+            newPracticeTime = 0;
+        } else if (solution == exercise) {
+            newRating = exercise.rating + 1;
 
-                final int rating;
-                final long practiceTime;
-                if (solution == null) {
-                    rating = Math.round(exercise.rating / 2.3f);
-                    practiceTime = 0;
-                } else if (solution == exercise) {
-                    rating = exercise.rating + 1;
+            long interval = (long) (Math.pow(3, newRating - 1));
+            interval += interval * (currentTime % 1000 + 1);
 
-                    long interval = (long) (Math.pow(3, rating - 1));
-                    interval += interval * (currentTime % 1000 + 1);
+            newPracticeTime = currentTime + interval;
+        } else {
+            newRating = exercise.rating + 1;
+            newPracticeTime = 0;
+        }
 
-                    practiceTime = currentTime + interval;
-                } else {
-                    rating = exercise.rating + 1;
-                    practiceTime = 0;
-                }
+        new UpdateExerciseTask(getActivity()).execute(exercise, newRating, newPracticeTime);
+    }
 
-                ContentValues values = new ContentValues();
-                values.put(Exercises.COLUMN_UPDATED_TIME, currentTime);
-                values.put(Exercises.COLUMN_RATING, rating);
-                values.put(Exercises.COLUMN_PRACTICE_TIME, practiceTime);
-                int result = context.getContentResolver()
-                        .update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exercise.id), values, null, null);
+    protected static class UpdateExerciseTask extends AsyncTask<Object, Void, Boolean> {
 
-                if (result > 0) {
-                    Intent intent = new Intent(context, SyncService.class);
-                    PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.set(AlarmManager.RTC, currentTime + AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15, pendingIntent);
-                }
+        private final Context context;
 
-                return Boolean.TRUE;
+        public UpdateExerciseTask(Context context) {
+            this.context = context.getApplicationContext();
+        }
+
+        @Override
+        protected Boolean doInBackground(Object... params) {
+            final PracticeExercise exercise = (PracticeExercise) params[0];
+            final Integer newRating = (Integer) params[1];
+            final Long newPracticeTime = (Long) params[2];
+
+            ContentValues values = new ContentValues();
+            values.put(Exercises.COLUMN_UPDATED_TIME, System.currentTimeMillis());
+            values.put(Exercises.COLUMN_RATING, newRating);
+            values.put(Exercises.COLUMN_PRACTICE_TIME, newPracticeTime);
+            int result = context.getContentResolver()
+                    .update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exercise.id), values, null, null);
+
+            if (result > 0) {
+                Intent intent = new Intent(context, SyncService.class);
+                PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15, pendingIntent);
             }
-        }.execute(getActivity().getApplicationContext(), exercise, solution);
+
+            return Boolean.TRUE;
+        }
+
     }
 
 }
