@@ -12,9 +12,6 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
 
-        // force sync
-        startService(new Intent(this, SyncService.class));
-
         // set repeating practice alarm
         PendingIntent intent = PendingIntent.getService(this, 0, new Intent(this, PracticeReminderService.class), PendingIntent.FLAG_CANCEL_CURRENT);
 

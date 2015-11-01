@@ -36,6 +36,9 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // force sync
+        startService(new Intent(this, SyncService.class));
+
         setContentView(R.layout.practice_activity);
 
         getSupportLoaderManager().initLoader(0, null, this);
