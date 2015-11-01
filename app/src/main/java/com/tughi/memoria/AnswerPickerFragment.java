@@ -148,8 +148,6 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
         answer2Button.setEnabled(false);
         answer3Button.setEnabled(false);
         answer4Button.setEnabled(false);
-
-        continuePractice(solution ? PRACTICE_NORMAL : PRACTICE_DELAYED);
     }
 
 }

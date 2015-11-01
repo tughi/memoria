@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,10 +20,6 @@ public abstract class PracticeFragment extends Fragment {
      * A {@link PracticeExercise} instance
      */
     public static final String ARG_EXERCISE = "exercise";
-
-    public static final int PRACTICE_IMMEDIATELY = 0;
-    public static final int PRACTICE_NORMAL = 750;
-    public static final int PRACTICE_DELAYED = 2500;
 
     protected static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
@@ -36,6 +33,8 @@ public abstract class PracticeFragment extends Fragment {
     protected static final int EXERCISE_SCOPE_LETTERS = 2;
     protected static final int EXERCISE_DEFINITION = 3;
     protected static final int EXERCISE_RATING = 4;
+
+    private static final Handler mainHandler = new Handler();
 
     private PracticeExercise exercise;
 
@@ -65,20 +64,11 @@ public abstract class PracticeFragment extends Fragment {
                 int newRating = exercise.rating - 1;
                 long newPracticeTime = System.currentTimeMillis() + 60 * 60 * 1000;
 
-                new UpdateExerciseTask(getActivity()) {
-                    @Override
-                    protected void onPostExecute(Boolean result) {
-                        continuePractice(100);
-                    }
-                }.execute(exercise, newRating, newPracticeTime);
+                new UpdateExerciseTask(getActivity()).execute(exercise, newRating, newPracticeTime);
 
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    protected void continuePractice(int when) {
-        ((PracticeActivity) getActivity()).continuePractice(when);
     }
 
     protected void submitAnswer(PracticeExercise solution) {
@@ -109,7 +99,15 @@ public abstract class PracticeFragment extends Fragment {
             newPracticeTime = 0;
         }
 
-        new UpdateExerciseTask(getActivity()).execute(exercise, newRating, newPracticeTime);
+        final Context context = getActivity().getApplicationContext();
+        mainHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (isResumed()) {
+                    new UpdateExerciseTask(context).execute(exercise, newRating, newPracticeTime);
+                }
+            }
+        }, solution == null ? 1500 : 500);
     }
 
     protected static class UpdateExerciseTask extends AsyncTask<Object, Void, Boolean> {

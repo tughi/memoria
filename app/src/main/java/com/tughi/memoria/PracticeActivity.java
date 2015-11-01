@@ -3,8 +3,6 @@ package com.tughi.memoria;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
@@ -14,7 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class PracticeActivity extends AppCompatActivity implements Handler.Callback, LoaderManager.LoaderCallbacks<Cursor> {
+public class PracticeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
@@ -34,15 +32,11 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
 
     private Cursor exercisesCursor;
 
-    private Handler practiceHandler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.practice_activity);
-
-        practiceHandler = new Handler(this);
 
         getSupportLoaderManager().initLoader(0, null, this);
     }
@@ -68,13 +62,6 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean handleMessage(Message message) {
-        replacePracticeFragment();
-
-        return true;
     }
 
     private void replacePracticeFragment() {
@@ -113,12 +100,9 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
                     .commitAllowingStateLoss();
         } else {
             // TODO: handle the case where no exercises are left to practice on
-            Fragment fragment = fragmentManager.findFragmentById(R.id.content);
-            if (fragment != null) {
-                fragmentManager.beginTransaction()
-                        .remove(fragment)
-                        .commitAllowingStateLoss();
-            }
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content, new PracticeBreakFragment())
+                    .commitAllowingStateLoss();
         }
     }
 
@@ -131,18 +115,25 @@ public class PracticeActivity extends AppCompatActivity implements Handler.Callb
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         exercisesCursor = cursor;
 
-        if (getSupportFragmentManager().findFragmentById(R.id.content) == null) {
-            continuePractice(PracticeFragment.PRACTICE_IMMEDIATELY);
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content);
+        if (!cursor.moveToFirst() || fragment == null) {
+            replacePracticeFragment();
+        } else {
+            Bundle fragmentArguments = fragment.getArguments();
+            if (fragmentArguments != null) {
+                PracticeExercise exercise = fragmentArguments.getParcelable(PracticeFragment.ARG_EXERCISE);
+                if (exercise == null || exercise.id != cursor.getLong(EXERCISE_ID)) {
+                    replacePracticeFragment();
+                }
+            } else {
+                replacePracticeFragment();
+            }
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         exercisesCursor = null;
-    }
-
-    public void continuePractice(int when) {
-        practiceHandler.sendEmptyMessageDelayed(0, when);
     }
 
 }

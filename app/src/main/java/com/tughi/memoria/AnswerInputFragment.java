@@ -100,8 +100,6 @@ public class AnswerInputFragment extends PracticeFragment implements LoaderManag
 
         answerEditText.setEnabled(false);
         answerEditText.setBackgroundColor(getResources().getColor(solution != null ? R.color.correct : R.color.wrong));
-
-        continuePractice(solution != null ? PRACTICE_NORMAL : PRACTICE_DELAYED);
     }
 
     private PracticeExercise getSolution(String answerScope) {
