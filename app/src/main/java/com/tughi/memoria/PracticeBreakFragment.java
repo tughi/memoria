@@ -90,6 +90,7 @@ public class PracticeBreakFragment extends Fragment implements Handler.Callback,
             handler.sendEmptyMessage(MESSAGE_UPDATE_TEXT);
             handler.sendEmptyMessageDelayed(MESSAGE_NOTIFY, practiceTime - currentTime);
         }
+        // TODO: handle the case where no exercises are left to practice on
     }
 
     @Override

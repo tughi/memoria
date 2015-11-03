@@ -53,4 +53,18 @@ public class PracticeExercise implements Parcelable {
         dest.writeInt(rating);
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof PracticeExercise)) return false;
+
+        PracticeExercise exercise = (PracticeExercise) other;
+
+        return id == exercise.id &&
+                rating == exercise.rating &&
+                scope.equals(exercise.scope) &&
+                scopeLetters.equals(exercise.scopeLetters) &&
+                definition.equals(exercise.definition);
+    }
+
 }

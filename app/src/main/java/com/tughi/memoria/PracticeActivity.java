@@ -30,8 +30,6 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
     private static final int EXERCISE_DEFINITION = 3;
     private static final int EXERCISE_RATING = 4;
 
-    private Cursor exercisesCursor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,48 +65,6 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
         return super.onOptionsItemSelected(item);
     }
 
-    private void replacePracticeFragment() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-
-        if (exercisesCursor != null && exercisesCursor.moveToFirst()) {
-            PracticeExercise practiceExercise = new PracticeExercise(
-                    exercisesCursor.getLong(EXERCISE_ID),
-                    exercisesCursor.getString(EXERCISE_SCOPE),
-                    exercisesCursor.getString(EXERCISE_SCOPE_LETTERS),
-                    exercisesCursor.getString(EXERCISE_DEFINITION),
-                    exercisesCursor.getInt(EXERCISE_RATING)
-            );
-
-            Bundle args = new Bundle();
-            args.putParcelable(PracticeFragment.ARG_EXERCISE, practiceExercise);
-
-            PracticeFragment practiceFragment;
-            final int exerciseType = practiceExercise.rating % 5;
-            switch (exerciseType) {
-                case 4:
-                    practiceFragment = new AnswerInputFragment();
-                    break;
-                case 3:
-                    args.putBoolean(AnswerPickerFragment.ARG_INVERT, true);
-                case 2:
-                case 1:
-                default:
-                    practiceFragment = new AnswerPickerFragment();
-                    break;
-            }
-            practiceFragment.setArguments(args);
-
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content, practiceFragment)
-                    .commitAllowingStateLoss();
-        } else {
-            // TODO: handle the case where no exercises are left to practice on
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content, new PracticeBreakFragment())
-                    .commitAllowingStateLoss();
-        }
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(this, Exercises.CONTENT_URI, EXERCISES_PROJECTION, EXERCISES_SELECTION, null, EXERCISES_SORT_ORDER);
@@ -116,27 +72,72 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        exercisesCursor = cursor;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.content);
 
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content);
-        if (!cursor.moveToFirst() || fragment == null) {
-            replacePracticeFragment();
-        } else {
+        PracticeExercise fragmentExercise = null;
+        if (fragment != null) {
             Bundle fragmentArguments = fragment.getArguments();
-            if (fragmentArguments != null) {
-                PracticeExercise exercise = fragmentArguments.getParcelable(PracticeFragment.ARG_EXERCISE);
-                if (exercise == null || exercise.id != cursor.getLong(EXERCISE_ID)) {
-                    replacePracticeFragment();
-                }
-            } else {
-                replacePracticeFragment();
+            fragmentExercise = fragmentArguments.getParcelable(PracticeFragment.ARG_EXERCISE);
+        }
+
+        PracticeExercise exercise = null;
+        if (cursor.moveToFirst()) {
+            exercise = new PracticeExercise(
+                    cursor.getLong(EXERCISE_ID),
+                    cursor.getString(EXERCISE_SCOPE),
+                    cursor.getString(EXERCISE_SCOPE_LETTERS),
+                    cursor.getString(EXERCISE_DEFINITION),
+                    cursor.getInt(EXERCISE_RATING)
+            );
+        }
+
+        if (exercise != null) {
+            if (!exercise.equals(fragmentExercise)) {
+                replacePracticeFragment(fragmentManager, exercise);
             }
+        } else if (!(fragment instanceof PracticeBreakFragment)) {
+            replaceBreakFragment(fragmentManager);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        exercisesCursor = null;
+    }
+
+    private void replacePracticeFragment(FragmentManager fragmentManager, PracticeExercise practiceExercise) {
+        Bundle args = new Bundle();
+        args.putParcelable(PracticeFragment.ARG_EXERCISE, practiceExercise);
+
+        PracticeFragment practiceFragment;
+        final int exerciseType = practiceExercise.rating % 5;
+        switch (exerciseType) {
+            case 4:
+                practiceFragment = new AnswerInputFragment();
+                break;
+            case 3:
+                args.putBoolean(AnswerPickerFragment.ARG_INVERT, true);
+            case 2:
+            case 1:
+            default:
+                practiceFragment = new AnswerPickerFragment();
+                break;
+        }
+        practiceFragment.setArguments(args);
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.content, practiceFragment)
+                .commitAllowingStateLoss();
+    }
+
+    private void replaceBreakFragment(FragmentManager fragmentManager) {
+        PracticeBreakFragment fragment = new PracticeBreakFragment();
+        fragment.setArguments(new Bundle());
+
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.content, fragment)
+                .commitAllowingStateLoss();
     }
 
 }
