@@ -24,8 +24,7 @@ public class PracticeBreakFragment extends Fragment implements Handler.Callback,
     private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_PRACTICE_TIME;
     private static final int EXERCISE_PRACTICE_TIME = 0;
 
-    private static final int MESSAGE_UPDATE_TEXT = 0;
-    private static final int MESSAGE_NOTIFY = 1;
+    private static final int MESSAGE_UPDATE_TIMER = 0;
 
     private TextView textView;
 
@@ -52,24 +51,26 @@ public class PracticeBreakFragment extends Fragment implements Handler.Callback,
     public void onResume() {
         super.onResume();
 
-        if (practiceTime > 0) {
-            handler.sendEmptyMessage(MESSAGE_UPDATE_TEXT);
+        if (practiceTime != 0) {
+            if (practiceTime > 0) {
+                handler.sendEmptyMessage(0);
+            }
         }
     }
 
     @Override
     public boolean handleMessage(Message msg) {
         if (isResumed()) {
-            switch (msg.what) {
-                case MESSAGE_UPDATE_TEXT:
-                    textView.setText(getString(R.string.break_time, DateUtils.getRelativeTimeSpanString(practiceTime)));
+            long currentTime = System.currentTimeMillis();
 
-                    handler.sendEmptyMessageDelayed(MESSAGE_UPDATE_TEXT, 1000);
-                    break;
-                case MESSAGE_NOTIFY:
-                    getActivity().getContentResolver().notifyChange(Exercises.CONTENT_URI, null);
-                    break;
+            CharSequence timeText = DateUtils.getRelativeTimeSpanString(practiceTime, currentTime, DateUtils.SECOND_IN_MILLIS);
+            textView.setText(getString(R.string.break_time, timeText));
+
+            if (currentTime > practiceTime) {
+                getActivity().getContentResolver().notifyChange(Exercises.CONTENT_URI, null);
             }
+
+            handler.sendEmptyMessageDelayed(MESSAGE_UPDATE_TIMER, DateUtils.SECOND_IN_MILLIS);
         }
 
         return true;
@@ -85,10 +86,7 @@ public class PracticeBreakFragment extends Fragment implements Handler.Callback,
         if (cursor.moveToFirst()) {
             practiceTime = cursor.getLong(EXERCISE_PRACTICE_TIME);
 
-            long currentTime = System.currentTimeMillis();
-
-            handler.sendEmptyMessage(MESSAGE_UPDATE_TEXT);
-            handler.sendEmptyMessageDelayed(MESSAGE_NOTIFY, practiceTime - currentTime);
+            handler.sendEmptyMessage(MESSAGE_UPDATE_TIMER);
         }
         // TODO: handle the case where no exercises are left to practice on
     }
