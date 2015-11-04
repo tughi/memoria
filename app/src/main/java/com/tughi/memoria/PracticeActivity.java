@@ -110,8 +110,7 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
         args.putParcelable(PracticeFragment.ARG_EXERCISE, practiceExercise);
 
         PracticeFragment practiceFragment;
-        final int exerciseType = practiceExercise.rating % 5;
-        switch (exerciseType) {
+        switch (practiceExercise.rating % PracticeFragment.PRACTICE_TYPES) {
             case 4:
                 practiceFragment = new AnswerInputFragment();
                 break;

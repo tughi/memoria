@@ -21,6 +21,8 @@ public abstract class PracticeFragment extends Fragment {
      */
     public static final String ARG_EXERCISE = "exercise";
 
+    public static final int PRACTICE_TYPES = 5;
+
     protected static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
             Exercises.COLUMN_SCOPE,
@@ -85,7 +87,12 @@ public abstract class PracticeFragment extends Fragment {
         final int newRating;
         final long newPracticeTime;
         if (solution == null) {
-            newRating = Math.round(exercise.rating / 2.3f);
+            int newRatingValue = exercise.rating / 2;
+            if (newRatingValue % PRACTICE_TYPES == exercise.rating % PRACTICE_TYPES) {
+                newRatingValue++;
+            }
+
+            newRating = newRatingValue;
             newPracticeTime = 0;
         } else if (solution == exercise) {
             newRating = exercise.rating + 1;
