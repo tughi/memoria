@@ -30,6 +30,7 @@ public abstract class PracticeFragment extends Fragment {
     private static final long TIME_WEEK = 7 * TIME_DAY;
 
     private static final long[] PRACTICE_TIMES = {
+            0,
             TIME_SECOND,
             2 * TIME_SECOND,
             3 * TIME_SECOND,
@@ -107,7 +108,7 @@ public abstract class PracticeFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.skip:
-                int newRating = exercise.rating - 1;
+                int newRating = Math.max(exercise.rating - 1, 1);
                 long newPracticeTime = System.currentTimeMillis() + TIME_HOUR;
 
                 new UpdateExerciseTask(getActivity()).execute(exercise, newRating, newPracticeTime);
@@ -131,9 +132,9 @@ public abstract class PracticeFragment extends Fragment {
         final int newRating;
         final long newPracticeTime;
         if (solution == null) {
-            int newRatingValue = exercise.rating * 3 / 4;
-            if (newRatingValue > 0 && newRatingValue % PRACTICE_TYPES == exercise.rating % PRACTICE_TYPES) {
-                newRatingValue++;
+            int newRatingValue = Math.max(exercise.rating * 3 / 4, 1);
+            if (newRatingValue > 1 && newRatingValue % PRACTICE_TYPES == exercise.rating % PRACTICE_TYPES) {
+                newRatingValue--;
             }
 
             newRating = newRatingValue;
@@ -142,7 +143,7 @@ public abstract class PracticeFragment extends Fragment {
             newRating = Math.min(exercise.rating + 1, PRACTICE_TIMES.length - 1);
             newPracticeTime = (long) (currentTime + PRACTICE_TIMES[newRating] + Math.random() * (PRACTICE_TIMES[newRating] - PRACTICE_TIMES[newRating - 1]) / 2);
         } else {
-            newRating = Math.max(exercise.rating - 1, 0);
+            newRating = Math.max(exercise.rating - 1, 1);
             newPracticeTime = currentTime + 5 * TIME_MINUTE;
         }
 

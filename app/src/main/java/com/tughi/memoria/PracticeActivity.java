@@ -23,7 +23,7 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
             Exercises.COLUMN_NEW,
     };
     private static final String EXERCISES_SELECTION = "STRFTIME('%s', 'now') * 1000 - " + Exercises.COLUMN_PRACTICE_TIME + " > 0";
-    private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_NEW + " DESC, " + Exercises.COLUMN_PRACTICE_TIME;
+    private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_NEW + ", " + Exercises.COLUMN_PRACTICE_TIME;
     private static final int EXERCISE_ID = 0;
     private static final int EXERCISE_SCOPE = 1;
     private static final int EXERCISE_SCOPE_LETTERS = 2;
