@@ -123,7 +123,6 @@ public class ExerciseEditActivity extends AppCompatActivity implements LoaderMan
                 if (uri == null) {
                     values.put(Exercises.COLUMN_CREATED_TIME, currentTime);
                     values.put(Exercises.COLUMN_UPDATED_TIME, currentTime);
-                    values.put(Exercises.COLUMN_RATING, 3);
                     uri = contentResolver.insert(Exercises.CONTENT_URI, values);
                 } else {
                     values.put(Exercises.COLUMN_UPDATED_TIME, currentTime);

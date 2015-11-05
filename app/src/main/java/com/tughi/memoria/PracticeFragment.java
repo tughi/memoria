@@ -23,6 +23,50 @@ public abstract class PracticeFragment extends Fragment {
 
     public static final int PRACTICE_TYPES = 5;
 
+    private static final long TIME_SECOND = 1000;
+    private static final long TIME_MINUTE = 60 * TIME_SECOND;
+    private static final long TIME_HOUR = 60 * TIME_MINUTE;
+    private static final long TIME_DAY = 24 * TIME_HOUR;
+    private static final long TIME_WEEK = 7 * TIME_DAY;
+
+    private static final long[] PRACTICE_TIMES = {
+            TIME_SECOND,
+            2 * TIME_SECOND,
+            3 * TIME_SECOND,
+            5 * TIME_SECOND,
+            10 * TIME_SECOND,
+            15 * TIME_SECOND,
+            30 * TIME_SECOND,
+            TIME_MINUTE,
+            2 * TIME_MINUTE,
+            3 * TIME_MINUTE,
+            5 * TIME_MINUTE,
+            10 * TIME_MINUTE,
+            15 * TIME_MINUTE,
+            30 * TIME_MINUTE,
+            TIME_HOUR,
+            2 * TIME_HOUR,
+            3 * TIME_HOUR,
+            6 * TIME_HOUR,
+            9 * TIME_HOUR,
+            12 * TIME_HOUR,
+            TIME_DAY,
+            2 * TIME_DAY,
+            3 * TIME_DAY,
+            4 * TIME_DAY,
+            5 * TIME_DAY,
+            6 * TIME_DAY,
+            TIME_WEEK,
+            2 * TIME_WEEK,
+            3 * TIME_WEEK,
+            5 * TIME_WEEK,
+            8 * TIME_WEEK,
+            13 * TIME_WEEK,
+            21 * TIME_WEEK,
+            34 * TIME_WEEK,
+            55 * TIME_WEEK,
+    };
+
     protected static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
             Exercises.COLUMN_SCOPE,
@@ -64,7 +108,7 @@ public abstract class PracticeFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.skip:
                 int newRating = exercise.rating - 1;
-                long newPracticeTime = System.currentTimeMillis() + 60 * 60 * 1000;
+                long newPracticeTime = System.currentTimeMillis() + TIME_HOUR;
 
                 new UpdateExerciseTask(getActivity()).execute(exercise, newRating, newPracticeTime);
 
@@ -87,23 +131,19 @@ public abstract class PracticeFragment extends Fragment {
         final int newRating;
         final long newPracticeTime;
         if (solution == null) {
-            int newRatingValue = exercise.rating / 2;
-            if (newRatingValue % PRACTICE_TYPES == exercise.rating % PRACTICE_TYPES) {
+            int newRatingValue = exercise.rating * 3 / 4;
+            if (newRatingValue > 0 && newRatingValue % PRACTICE_TYPES == exercise.rating % PRACTICE_TYPES) {
                 newRatingValue++;
             }
 
             newRating = newRatingValue;
             newPracticeTime = 0;
         } else if (solution == exercise) {
-            newRating = exercise.rating + 1;
-
-            long interval = (long) (Math.pow(3, newRating - 1));
-            interval += interval * (currentTime % 1000 + 1);
-
-            newPracticeTime = currentTime + interval;
+            newRating = Math.min(exercise.rating + 1, PRACTICE_TIMES.length - 1);
+            newPracticeTime = (long) (currentTime + PRACTICE_TIMES[newRating] + Math.random() * (PRACTICE_TIMES[newRating] - PRACTICE_TIMES[newRating - 1]) / 2);
         } else {
-            newRating = exercise.rating + 1;
-            newPracticeTime = 0;
+            newRating = Math.max(exercise.rating - 1, 0);
+            newPracticeTime = currentTime + 5 * TIME_MINUTE;
         }
 
         final Context context = getActivity().getApplicationContext();
