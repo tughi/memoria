@@ -19,20 +19,4 @@ public class Exercises {
     public static final String COLUMN_SYNC_TIME = "sync_time";
     public static final String COLUMN_NEW = "new";
 
-    protected static CharSequence getRatingText(final int rating) {
-        StringBuilder text = new StringBuilder();
-
-        int index = 0;
-        for (; index < 5 && index < rating; index++) {
-            text.append('★');
-        }
-        for (; index < 5; index++) {
-            text.append('☆');
-        }
-
-        text.append(" (").append(Integer.toString(rating)).append(')');
-
-        return text;
-    }
-
 }

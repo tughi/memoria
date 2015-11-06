@@ -10,4 +10,43 @@
     <color name="wrong">#D32F2F</color>
 
     <color name="picker_button">#424242</color>
+
+    <color name="rating_00">#616161</color>
+    <color name="rating_01">#F44336</color>
+    <color name="rating_02">#F54D36</color>
+    <color name="rating_03">#F65837</color>
+    <color name="rating_04">#F76337</color>
+    <color name="rating_05">#F87038</color>
+    <color name="rating_06">#F97D38</color>
+    <color name="rating_07">#F98A38</color>
+    <color name="rating_08">#FA9939</color>
+    <color name="rating_09">#FBA839</color>
+    <color name="rating_10">#FCB73A</color>
+    <color name="rating_11">#FDC83A</color>
+    <color name="rating_12">#FED93B</color>
+    <color name="rating_13">#FFEB3B</color>
+    <color name="rating_14">#F5E83C</color>
+    <color name="rating_15">#EBE53D</color>
+    <color name="rating_16">#E1E33E</color>
+    <color name="rating_17">#D8E03E</color>
+    <color name="rating_18">#CFDD3F</color>
+    <color name="rating_19">#C6DA40</color>
+    <color name="rating_20">#BDD841</color>
+    <color name="rating_21">#B4D542</color>
+    <color name="rating_22">#ACD243</color>
+    <color name="rating_23">#A4D044</color>
+    <color name="rating_24">#9CCD45</color>
+    <color name="rating_25">#94CB46</color>
+    <color name="rating_26">#8CC846</color>
+    <color name="rating_27">#85C547</color>
+    <color name="rating_28">#7EC348</color>
+    <color name="rating_29">#77C049</color>
+    <color name="rating_30">#70BE4A</color>
+    <color name="rating_31">#6ABB4B</color>
+    <color name="rating_32">#63B94C</color>
+    <color name="rating_33">#5DB64D</color>
+    <color name="rating_34">#57B44E</color>
+    <color name="rating_35">#52B14F</color>
+    <color name="rating_36">#4CAF50</color>
+
 </resources>

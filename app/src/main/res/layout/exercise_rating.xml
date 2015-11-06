@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="8dp"
+    android:background="@color/rating_00"
+    android:orientation="horizontal">
+
+    <View
+        android:id="@+id/rating_01"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_01" />
+
+    <View
+        android:id="@+id/rating_02"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_02" />
+
+    <View
+        android:id="@+id/rating_03"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_03" />
+
+    <View
+        android:id="@+id/rating_04"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_04" />
+
+    <View
+        android:id="@+id/rating_05"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_05" />
+
+    <View
+        android:id="@+id/rating_06"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_06" />
+
+    <View
+        android:id="@+id/rating_07"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_07" />
+
+    <View
+        android:id="@+id/rating_08"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_08" />
+
+    <View
+        android:id="@+id/rating_09"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_09" />
+
+    <View
+        android:id="@+id/rating_10"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_10" />
+
+    <View
+        android:id="@+id/rating_11"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_11" />
+
+    <View
+        android:id="@+id/rating_12"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_12" />
+
+    <View
+        android:id="@+id/rating_13"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_13" />
+
+    <View
+        android:id="@+id/rating_14"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_14" />
+
+    <View
+        android:id="@+id/rating_15"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_15" />
+
+    <View
+        android:id="@+id/rating_16"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_16" />
+
+    <View
+        android:id="@+id/rating_17"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_17" />
+
+    <View
+        android:id="@+id/rating_18"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_18" />
+
+    <View
+        android:id="@+id/rating_19"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_19" />
+
+    <View
+        android:id="@+id/rating_20"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_20" />
+
+    <View
+        android:id="@+id/rating_21"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_21" />
+
+    <View
+        android:id="@+id/rating_22"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_22" />
+
+    <View
+        android:id="@+id/rating_23"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_23" />
+
+    <View
+        android:id="@+id/rating_24"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_24" />
+
+    <View
+        android:id="@+id/rating_25"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_25" />
+
+    <View
+        android:id="@+id/rating_26"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_26" />
+
+    <View
+        android:id="@+id/rating_27"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_27" />
+
+    <View
+        android:id="@+id/rating_28"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_28" />
+
+    <View
+        android:id="@+id/rating_29"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_29" />
+
+    <View
+        android:id="@+id/rating_30"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_30" />
+
+    <View
+        android:id="@+id/rating_31"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_31" />
+
+    <View
+        android:id="@+id/rating_32"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_32" />
+
+    <View
+        android:id="@+id/rating_33"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_33" />
+
+    <View
+        android:id="@+id/rating_34"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_34" />
+
+    <View
+        android:id="@+id/rating_35"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_35" />
+
+    <View
+        android:id="@+id/rating_36"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/rating_36" />
+
+</LinearLayout>

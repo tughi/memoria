@@ -9,10 +9,12 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 public abstract class PracticeFragment extends Fragment {
 
@@ -97,6 +99,87 @@ public abstract class PracticeFragment extends Fragment {
         exercise = arguments.getParcelable(ARG_EXERCISE);
 
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        switch (exercise.rating) {
+            case 0:
+                view.findViewById(R.id.rating_01).setVisibility(View.INVISIBLE);
+            case 1:
+                view.findViewById(R.id.rating_02).setVisibility(View.INVISIBLE);
+            case 2:
+                view.findViewById(R.id.rating_03).setVisibility(View.INVISIBLE);
+            case 3:
+                view.findViewById(R.id.rating_04).setVisibility(View.INVISIBLE);
+            case 4:
+                view.findViewById(R.id.rating_05).setVisibility(View.INVISIBLE);
+            case 5:
+                view.findViewById(R.id.rating_06).setVisibility(View.INVISIBLE);
+            case 6:
+                view.findViewById(R.id.rating_07).setVisibility(View.INVISIBLE);
+            case 7:
+                view.findViewById(R.id.rating_08).setVisibility(View.INVISIBLE);
+            case 8:
+                view.findViewById(R.id.rating_09).setVisibility(View.INVISIBLE);
+            case 9:
+                view.findViewById(R.id.rating_10).setVisibility(View.INVISIBLE);
+            case 10:
+                view.findViewById(R.id.rating_11).setVisibility(View.INVISIBLE);
+            case 11:
+                view.findViewById(R.id.rating_12).setVisibility(View.INVISIBLE);
+            case 12:
+                view.findViewById(R.id.rating_13).setVisibility(View.INVISIBLE);
+            case 13:
+                view.findViewById(R.id.rating_14).setVisibility(View.INVISIBLE);
+            case 14:
+                view.findViewById(R.id.rating_15).setVisibility(View.INVISIBLE);
+            case 15:
+                view.findViewById(R.id.rating_16).setVisibility(View.INVISIBLE);
+            case 16:
+                view.findViewById(R.id.rating_17).setVisibility(View.INVISIBLE);
+            case 17:
+                view.findViewById(R.id.rating_18).setVisibility(View.INVISIBLE);
+            case 18:
+                view.findViewById(R.id.rating_19).setVisibility(View.INVISIBLE);
+            case 19:
+                view.findViewById(R.id.rating_20).setVisibility(View.INVISIBLE);
+            case 20:
+                view.findViewById(R.id.rating_21).setVisibility(View.INVISIBLE);
+            case 21:
+                view.findViewById(R.id.rating_22).setVisibility(View.INVISIBLE);
+            case 22:
+                view.findViewById(R.id.rating_23).setVisibility(View.INVISIBLE);
+            case 23:
+                view.findViewById(R.id.rating_24).setVisibility(View.INVISIBLE);
+            case 24:
+                view.findViewById(R.id.rating_25).setVisibility(View.INVISIBLE);
+            case 25:
+                view.findViewById(R.id.rating_26).setVisibility(View.INVISIBLE);
+            case 26:
+                view.findViewById(R.id.rating_27).setVisibility(View.INVISIBLE);
+            case 27:
+                view.findViewById(R.id.rating_28).setVisibility(View.INVISIBLE);
+            case 28:
+                view.findViewById(R.id.rating_29).setVisibility(View.INVISIBLE);
+            case 29:
+                view.findViewById(R.id.rating_30).setVisibility(View.INVISIBLE);
+            case 30:
+                view.findViewById(R.id.rating_31).setVisibility(View.INVISIBLE);
+            case 31:
+                view.findViewById(R.id.rating_32).setVisibility(View.INVISIBLE);
+            case 32:
+                view.findViewById(R.id.rating_33).setVisibility(View.INVISIBLE);
+            case 33:
+                view.findViewById(R.id.rating_34).setVisibility(View.INVISIBLE);
+            case 34:
+                view.findViewById(R.id.rating_35).setVisibility(View.INVISIBLE);
+            case 35:
+                view.findViewById(R.id.rating_36).setVisibility(View.INVISIBLE);
+        }
+
     }
 
     @Override

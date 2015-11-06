@@ -41,9 +41,6 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
 
         PracticeExercise exercise = getExercise();
 
-        TextView ratingTextView = (TextView) view.findViewById(R.id.rating);
-        ratingTextView.setText(Exercises.getRatingText(exercise.rating));
-
         TextView questionTextView = (TextView) view.findViewById(R.id.question);
         questionTextView.setText(invert ? exercise.definition : exercise.scope);
 

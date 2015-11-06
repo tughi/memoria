@@ -24,6 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.FileNotFoundException;
+import java.text.DateFormat;
 
 public class ExercisesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -33,6 +34,7 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
     private static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
             Exercises.COLUMN_SCOPE,
+            Exercises.COLUMN_DEFINITION,
             Exercises.COLUMN_RATING,
             Exercises.COLUMN_PRACTICE_TIME,
             Exercises.COLUMN_NEW,
@@ -40,8 +42,9 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
     private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_NEW + ", " + Exercises.COLUMN_PRACTICE_TIME;
     private static final int EXERCISE_ID = 0;
     private static final int EXERCISE_SCOPE = 1;
-    private static final int EXERCISE_RATING = 2;
-    private static final int EXERCISE_PRACTICE_TIME = 3;
+    private static final int EXERCISE_DEFINITION = 2;
+    private static final int EXERCISE_RATING = 3;
+    private static final int EXERCISE_PRACTICE_TIME = 4;
 
     private ExercisesAdapter adapter;
 
@@ -182,16 +185,17 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
 
             Cursor cursor = getItem(position);
             ((TextView) convertView.findViewById(R.id.scope)).setText(cursor.getString(EXERCISE_SCOPE));
-            ((TextView) convertView.findViewById(R.id.rating)).setText(Exercises.getRatingText(cursor.getInt(EXERCISE_RATING)));
+            ((TextView) convertView.findViewById(R.id.definition)).setText(cursor.getString(EXERCISE_DEFINITION));
+            ((TextView) convertView.findViewById(R.id.rating)).setText(cursor.getString(EXERCISE_RATING));
 
             long practiceTime = cursor.getLong(EXERCISE_PRACTICE_TIME);
             TextView practiceTimeTextView = (TextView) convertView.findViewById(R.id.practice_time);
             if (DateUtils.isToday(practiceTime)) {
-                practiceTimeTextView.setText(DateUtils.formatDateTime(activity, practiceTime, DateUtils.FORMAT_SHOW_TIME));
+                practiceTimeTextView.setText(DateFormat.getTimeInstance(DateFormat.SHORT).format(practiceTime));
             } else if (practiceTime == 0) {
                 practiceTimeTextView.setText("");
             } else {
-                practiceTimeTextView.setText(DateUtils.formatDateTime(activity, practiceTime, DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE));
+                practiceTimeTextView.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(practiceTime));
             }
 
             return convertView;
