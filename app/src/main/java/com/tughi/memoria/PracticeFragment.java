@@ -224,7 +224,7 @@ public abstract class PracticeFragment extends Fragment {
             newPracticeTime = 0;
         } else if (solution == exercise) {
             newRating = Math.min(exercise.rating + 1, PRACTICE_TIMES.length - 1);
-            newPracticeTime = (long) (currentTime + PRACTICE_TIMES[newRating] + Math.random() * (PRACTICE_TIMES[newRating] - PRACTICE_TIMES[newRating - 1]) / 2);
+            newPracticeTime = (long) (currentTime + PRACTICE_TIMES[newRating - 1] + Math.random() * (PRACTICE_TIMES[newRating] - PRACTICE_TIMES[newRating - 1]));
         } else {
             newRating = Math.max(exercise.rating - 1, 1);
             newPracticeTime = currentTime + 5 * TIME_MINUTE;
