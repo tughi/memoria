@@ -4,14 +4,28 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/break_time"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:drawablePadding="16dp"
-        android:drawableTop="@drawable/logo"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/random"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@null"
+            android:src="@drawable/clickable_logo" />
+
+        <TextView
+            android:id="@+id/break_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    </LinearLayout>
 
 </FrameLayout>

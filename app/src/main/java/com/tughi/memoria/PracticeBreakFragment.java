@@ -1,6 +1,10 @@
 package com.tughi.memoria;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,10 +23,12 @@ import android.widget.TextView;
 public class PracticeBreakFragment extends Fragment implements Handler.Callback, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String[] EXERCISES_PROJECTION = {
+            Exercises.COLUMN_ID,
             Exercises.COLUMN_PRACTICE_TIME,
     };
     private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_PRACTICE_TIME;
-    private static final int EXERCISE_PRACTICE_TIME = 0;
+    private static final int EXERCISE_ID = 0;
+    private static final int EXERCISE_PRACTICE_TIME = 1;
 
     private static final int MESSAGE_UPDATE_TIMER = 0;
 
@@ -31,6 +37,8 @@ public class PracticeBreakFragment extends Fragment implements Handler.Callback,
     private Handler handler = new Handler(this);
 
     private long practiceTime;
+
+    private long randomExerciseId;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,9 +49,33 @@ public class PracticeBreakFragment extends Fragment implements Handler.Callback,
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.practice_break_fragment, container, false);
         textView = (TextView) view.findViewById(R.id.break_time);
+
+        view.findViewById(R.id.random).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (randomExerciseId > 0) {
+                    view.setEnabled(false);
+
+                    new AsyncTask<Object, Object, Boolean>() {
+                        @Override
+                        protected Boolean doInBackground(Object... params) {
+                            final Context context = (Context) params[0];
+                            final long exerciseId = (long) params[1];
+
+                            ContentValues values = new ContentValues();
+                            values.put(Exercises.COLUMN_PRACTICE_TIME, System.currentTimeMillis());
+                            context.getContentResolver().update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exerciseId), values, null, null);
+
+                            return Boolean.TRUE;
+                        }
+                    }.execute(getActivity().getApplicationContext(), randomExerciseId);
+                }
+            }
+        });
+
         return view;
     }
 
@@ -87,8 +119,15 @@ public class PracticeBreakFragment extends Fragment implements Handler.Callback,
             practiceTime = cursor.getLong(EXERCISE_PRACTICE_TIME);
 
             handler.sendEmptyMessage(MESSAGE_UPDATE_TIMER);
+
+            int exercises = cursor.getCount();
+            if (exercises > 3) {
+                int randomExercise = (int) (exercises * 2 / 3. + Math.random() * exercises / 3.);
+                if (cursor.moveToPosition(randomExercise)) {
+                    randomExerciseId = cursor.getLong(EXERCISE_ID);
+                }
+            }
         }
-        // TODO: handle the case where no exercises are left to practice on
     }
 
     @Override
