@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +57,25 @@ public class AnswerInputFragment extends PracticeFragment implements LoaderManag
                 return false;
             }
         });
+        answerEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence text, int start, int count, int after) {
+                // ignored
+            }
+
+            @Override
+            public void onTextChanged(CharSequence text, int start, int before, int count) {
+                // ignored
+            }
+
+            @Override
+            public void afterTextChanged(Editable text) {
+                PracticeExercise solution = getSolution(text.toString());
+                if (solution != null) {
+                    onSubmit(solution);
+                }
+            }
+        });
 
         return view;
     }
@@ -89,10 +110,14 @@ public class AnswerInputFragment extends PracticeFragment implements LoaderManag
 
     }
 
-    @SuppressWarnings("deprecation")
     private void onSubmit() {
         PracticeExercise solution = getSolution(answerEditText.getText().toString());
 
+        onSubmit(solution);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void onSubmit(PracticeExercise solution) {
         submitAnswer(solution);
 
         answerEditText.setEnabled(false);
