@@ -230,7 +230,12 @@ public abstract class PracticeFragment extends Fragment {
             newPracticeTime = currentTime + 5 * TIME_MINUTE;
         }
 
-        final Context context = getActivity().getApplicationContext();
+        PracticeActivity activity = (PracticeActivity) getActivity();
+        if (solution != null) {
+            activity.speak(solution.scope);
+        }
+
+        final Context context = activity.getApplicationContext();
         mainHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -266,7 +271,7 @@ public abstract class PracticeFragment extends Fragment {
                 Intent intent = new Intent(context, SyncService.class);
                 PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
                 AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15, pendingIntent);
+                alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 30 * TIME_MINUTE, pendingIntent);
             }
 
             return Boolean.TRUE;

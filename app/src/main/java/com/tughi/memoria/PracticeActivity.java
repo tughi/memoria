@@ -2,7 +2,9 @@ package com.tughi.memoria;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
@@ -11,6 +13,8 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.Locale;
 
 public class PracticeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -30,6 +34,9 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
     private static final int EXERCISE_DEFINITION = 3;
     private static final int EXERCISE_RATING = 4;
 
+    private AudioManager audioManager;
+    private TextToSpeech textToSpeech;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +47,26 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
         setContentView(R.layout.practice_activity);
 
         getSupportLoaderManager().initLoader(0, null, this);
+
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (textToSpeech.isLanguageAvailable(Locale.JAPAN) >= TextToSpeech.LANG_AVAILABLE) {
+                    textToSpeech.setLanguage(Locale.JAPAN);
+                }
+            }
+        });
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+    }
+
+    @Override
+    protected void onDestroy() {
+        textToSpeech.shutdown();
+
+        super.onDestroy();
     }
 
     @Override
@@ -137,6 +164,13 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
                 .beginTransaction()
                 .replace(R.id.content, fragment)
                 .commitAllowingStateLoss();
+    }
+
+    @SuppressWarnings("deprecation")
+    protected void speak(String scope) {
+        if (audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) > 0) {
+            textToSpeech.speak(scope, TextToSpeech.QUEUE_FLUSH, null);
+        }
     }
 
 }
