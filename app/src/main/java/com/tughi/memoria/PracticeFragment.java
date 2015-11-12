@@ -226,7 +226,7 @@ public abstract class PracticeFragment extends Fragment {
             newRating = Math.min(exercise.rating + 1, PRACTICE_TIMES.length - 1);
             newPracticeTime = (long) (currentTime + PRACTICE_TIMES[newRating - 1] + Math.random() * (PRACTICE_TIMES[newRating] - PRACTICE_TIMES[newRating - 1]));
         } else {
-            newRating = Math.max(exercise.rating - 1, 1);
+            newRating = Math.max(exercise.rating + 1, 1);
             newPracticeTime = currentTime + 5 * TIME_MINUTE;
         }
 
