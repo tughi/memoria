@@ -54,6 +54,15 @@
             android:inputType="textMultiLine"
             android:singleLine="false" />
 
+        <Switch
+            android:id="@+id/disabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="@dimen/abc_control_inset_material"
+            android:singleLine="false"
+            android:text="@string/disabled" />
+
     </LinearLayout>
 
 </ScrollView>

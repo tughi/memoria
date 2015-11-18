@@ -39,6 +39,7 @@ public class ExercisesProvider extends ContentProvider {
         projection.put(Exercises.COLUMN_NOTES, Exercises.COLUMN_NOTES);
         projection.put(Exercises.COLUMN_PRACTICE_TIME, Exercises.COLUMN_PRACTICE_TIME);
         projection.put(Exercises.COLUMN_RATING, Exercises.COLUMN_RATING);
+        projection.put(Exercises.COLUMN_DISABLED, Exercises.COLUMN_DISABLED);
         projection.put(Exercises.COLUMN_SYNC_TIME, Exercises.COLUMN_SYNC_TIME);
         projection.put(Exercises.COLUMN_NEW, "(" + Exercises.COLUMN_RATING + " = 0) AS " + Exercises.COLUMN_NEW);
     }

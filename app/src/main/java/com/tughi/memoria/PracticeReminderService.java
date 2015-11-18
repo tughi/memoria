@@ -14,7 +14,7 @@ public class PracticeReminderService extends IntentService {
             Exercises.COLUMN_ID,
             Exercises.COLUMN_NEW,
     };
-    private static final String EXERCISES_SELECTION = Exercises.COLUMN_PRACTICE_TIME + " < CAST(? AS INTEGER)";
+    private static final String EXERCISES_SELECTION = Exercises.COLUMN_DISABLED + " = 0 AND " + Exercises.COLUMN_RATING + " > 0 AND " + Exercises.COLUMN_PRACTICE_TIME + " < CAST(? AS INTEGER)";
 
     public PracticeReminderService() {
         super(PracticeReminderService.class.getSimpleName());

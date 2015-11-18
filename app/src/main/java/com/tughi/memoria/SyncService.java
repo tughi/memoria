@@ -38,6 +38,7 @@ public class SyncService extends IntentService {
             Exercises.COLUMN_NOTES,
             Exercises.COLUMN_RATING,
             Exercises.COLUMN_PRACTICE_TIME,
+            Exercises.COLUMN_DISABLED,
             Exercises.COLUMN_SYNC_TIME,
     };
     private static final int EXERCISE_ID = 0;
@@ -49,7 +50,8 @@ public class SyncService extends IntentService {
     private static final int EXERCISE_NOTES = 6;
     private static final int EXERCISE_RATING = 7;
     private static final int EXERCISE_PRACTICE_TIME = 8;
-    private static final int EXERCISE_SYNC_TIME = 9;
+    private static final int EXERCISE_DISABLED = 9;
+    private static final int EXERCISE_SYNC_TIME = 10;
 
     private static final String BASE_URL_PATH = "/api/v1/exercises";
 
@@ -110,6 +112,7 @@ public class SyncService extends IntentService {
                     exercise.put(Exercises.COLUMN_NOTES, cursor.getString(EXERCISE_NOTES));
                     exercise.put(Exercises.COLUMN_RATING, cursor.getInt(EXERCISE_RATING));
                     exercise.put(Exercises.COLUMN_PRACTICE_TIME, cursor.getLong(EXERCISE_PRACTICE_TIME));
+                    exercise.put(Exercises.COLUMN_DISABLED, cursor.getInt(EXERCISE_DISABLED) != 0);
 
                     HttpURLConnection connection;
                     if (cursor.isNull(EXERCISE_SYNC_TIME)) {
@@ -180,6 +183,7 @@ public class SyncService extends IntentService {
                     values.put(Exercises.COLUMN_NOTES, exercise.notes);
                     values.put(Exercises.COLUMN_RATING, exercise.rating);
                     values.put(Exercises.COLUMN_PRACTICE_TIME, exercise.practiceTime);
+                    values.put(Exercises.COLUMN_DISABLED, exercise.disabled);
                     values.put(Exercises.COLUMN_SYNC_TIME, syncTime);
 
                     contentResolver.insert(Exercises.CONTENT_SYNC_URI, values);
@@ -232,6 +236,8 @@ public class SyncService extends IntentService {
 
         @JsonProperty(Exercises.COLUMN_PRACTICE_TIME)
         public long practiceTime;
+
+        public boolean disabled;
 
     }
 

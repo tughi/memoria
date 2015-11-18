@@ -9,5 +9,6 @@ CREATE TABLE exercises (
     notes TEXT,
     rating INTEGER NOT NULL DEFAULT 0,
     practice_time INTEGER NOT NULL DEFAULT 0,
+    disabled INTEGER NOT NULL DEFAULT 0,
     sync_time INTEGER
 );

@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 public class ExerciseEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -23,6 +24,7 @@ public class ExerciseEditActivity extends AppCompatActivity implements LoaderMan
     private EditText scopeEditText;
     private EditText definitionEditText;
     private EditText notesEditText;
+    private Switch disabledSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,7 @@ public class ExerciseEditActivity extends AppCompatActivity implements LoaderMan
         scopeEditText = (EditText) findViewById(R.id.scope);
         definitionEditText = (EditText) findViewById(R.id.definition);
         notesEditText = (EditText) findViewById(R.id.notes);
+        disabledSwitch = (Switch) findViewById(R.id.disabled);
 
         if (exerciseUri != null) {
             getSupportLoaderManager().initLoader(0, null, this);
@@ -69,6 +72,7 @@ public class ExerciseEditActivity extends AppCompatActivity implements LoaderMan
             scopeEditText.setText(cursor.getString(cursor.getColumnIndex(Exercises.COLUMN_SCOPE)));
             definitionEditText.setText(cursor.getString(cursor.getColumnIndex(Exercises.COLUMN_DEFINITION)));
             notesEditText.setText(cursor.getString(cursor.getColumnIndex(Exercises.COLUMN_NOTES)));
+            disabledSwitch.setChecked(cursor.getInt(cursor.getColumnIndex(Exercises.COLUMN_DISABLED)) != 0);
 
             loader.abandon();
         }
@@ -94,6 +98,7 @@ public class ExerciseEditActivity extends AppCompatActivity implements LoaderMan
             putValue(Exercises.COLUMN_SCOPE, scopeEditText);
             putValue(Exercises.COLUMN_DEFINITION, definitionEditText);
             putValue(Exercises.COLUMN_NOTES, notesEditText);
+            values.put(Exercises.COLUMN_DISABLED, disabledSwitch.isChecked());
         }
 
         private void putValue(String key, EditText editText) {
@@ -121,10 +126,14 @@ public class ExerciseEditActivity extends AppCompatActivity implements LoaderMan
                 Uri uri = exerciseUri;
                 long currentTime = System.currentTimeMillis();
                 if (uri == null) {
+                    // create new exercise
+
                     values.put(Exercises.COLUMN_CREATED_TIME, currentTime);
                     values.put(Exercises.COLUMN_UPDATED_TIME, currentTime);
                     uri = contentResolver.insert(Exercises.CONTENT_URI, values);
                 } else {
+                    // update exercise
+
                     values.put(Exercises.COLUMN_UPDATED_TIME, currentTime);
                     if (contentResolver.update(uri, values, null, null) <= 0) {
                         uri = null;

@@ -26,6 +26,7 @@ public class PracticeBreakFragment extends Fragment implements Handler.Callback,
             Exercises.COLUMN_ID,
             Exercises.COLUMN_PRACTICE_TIME,
     };
+    private static final String EXERCISES_SELECTION = Exercises.COLUMN_DISABLED + " = 0 AND " + Exercises.COLUMN_RATING + " > 0";
     private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_PRACTICE_TIME;
     private static final int EXERCISE_ID = 0;
     private static final int EXERCISE_PRACTICE_TIME = 1;
@@ -110,7 +111,7 @@ public class PracticeBreakFragment extends Fragment implements Handler.Callback,
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), Exercises.CONTENT_URI, EXERCISES_PROJECTION, null, null, EXERCISES_SORT_ORDER);
+        return new CursorLoader(getActivity(), Exercises.CONTENT_URI, EXERCISES_PROJECTION, EXERCISES_SELECTION, null, EXERCISES_SORT_ORDER);
     }
 
     @Override

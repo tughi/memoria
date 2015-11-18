@@ -16,6 +16,7 @@ public class Exercises {
     public static final String COLUMN_NOTES = "notes";
     public static final String COLUMN_PRACTICE_TIME = "practice_time";
     public static final String COLUMN_RATING = "rating";
+    public static final String COLUMN_DISABLED = "disabled";
     public static final String COLUMN_SYNC_TIME = "sync_time";
     public static final String COLUMN_NEW = "new";
 

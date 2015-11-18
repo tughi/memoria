@@ -65,7 +65,7 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), Exercises.CONTENT_URI, EXERCISES_PROJECTION, null, null, null);
+        return new CursorLoader(getActivity(), Exercises.CONTENT_URI, EXERCISES_PROJECTION, EXERCISES_SELECTION, null, null);
     }
 
     @Override

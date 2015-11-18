@@ -28,23 +28,10 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
         <TextView
-            android:id="@+id/rating"
+            android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:text="|"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
-        <TextView
-            android:id="@+id/practice_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     </LinearLayout>
