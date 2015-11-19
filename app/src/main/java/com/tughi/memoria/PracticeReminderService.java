@@ -38,6 +38,9 @@ public class PracticeReminderService extends IntentService {
                     .setContentText(getString(R.string.practice_exercises, count))
                     .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, PracticeActivity.class), PendingIntent.FLAG_CANCEL_CURRENT))
                     .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                    .setColor(getResources().getColor(R.color.primary))
                     .build();
             notificationManager.notify(R.id.practice_notification, notification);
         } else {
