@@ -77,7 +77,6 @@ public abstract class PracticeFragment extends Fragment {
             Exercises.COLUMN_DEFINITION,
             Exercises.COLUMN_RATING,
     };
-    protected static final String EXERCISES_SELECTION = Exercises.COLUMN_DISABLED + " = 0 AND " + Exercises.COLUMN_RATING + " > 0";
     protected static final int EXERCISE_ID = 0;
     protected static final int EXERCISE_SCOPE = 1;
     protected static final int EXERCISE_SCOPE_LETTERS = 2;

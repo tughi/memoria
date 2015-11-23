@@ -65,7 +65,10 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), Exercises.CONTENT_URI, EXERCISES_PROJECTION, EXERCISES_SELECTION, null, null);
+        PracticeExercise exercise = getExercise();
+        String selection = Exercises.COLUMN_ID + " != " + exercise.id + " AND " + Exercises.COLUMN_DISABLED + " = 0 AND " + Exercises.COLUMN_RATING + " > 0";
+        String sortOrder = "ABS(LENGTH(" + Exercises.COLUMN_SCOPE_LETTERS + ") - " + exercise.scopeLetters.length() + "), " + Exercises.COLUMN_RATING + " DESC";
+        return new CursorLoader(getActivity(), Exercises.CONTENT_URI, EXERCISES_PROJECTION, selection, null, sortOrder);
     }
 
     @Override
@@ -89,7 +92,7 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
 
             int count = cursor.getCount();
             while (!answerButtons.isEmpty()) {
-                int wrongPosition = random.nextInt(count);
+                int wrongPosition = random.nextInt(Math.min(30, count));
                 if (cursor.moveToPosition(wrongPosition) && cursor.getLong(EXERCISE_ID) != getArguments().getLong(Exercises.COLUMN_ID)) {
                     PracticeExercise answer = new PracticeExercise(
                             cursor.getLong(EXERCISE_ID),
