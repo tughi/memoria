@@ -57,7 +57,7 @@ public class SyncService extends IntentService {
 
     private static final String HTTP_METHOD_GET = "GET";
     private static final String HTTP_METHOD_POST = "POST";
-    private static final String HTTP_METHOD_PATCH = "PATCH";
+    private static final String HTTP_METHOD_PUT = "PUT";
 
     private static final String PREFERENCE_EXERCISES_ETAG = "exercises_etag";
 
@@ -119,7 +119,7 @@ public class SyncService extends IntentService {
                         connection = openConnection(serverUrl + BASE_URL_PATH, HTTP_METHOD_POST);
                         exercise.put(Exercises.COLUMN_CREATED_TIME, cursor.getLong(EXERCISE_CREATED_TIME));
                     } else {
-                        connection = openConnection(serverUrl + BASE_URL_PATH + "/" + cursor.getString(EXERCISE_ID), HTTP_METHOD_PATCH);
+                        connection = openConnection(serverUrl + BASE_URL_PATH + "/" + cursor.getString(EXERCISE_ID), HTTP_METHOD_PUT);
                     }
 
                     ObjectMapper objectMapper = new ObjectMapper();
