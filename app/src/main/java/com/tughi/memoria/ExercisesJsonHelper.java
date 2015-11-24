@@ -48,8 +48,6 @@ public class ExercisesJsonHelper {
     private static final int EXERCISE_RATING = 8;
 
     public static void importFromJson(Context context, InputStream input) throws IOException {
-        int updates = 0;
-
         try {
             JsonFactory jsonFactory = new MappingJsonFactory();
             JsonParser jsonParser = jsonFactory.createParser(input);
@@ -62,9 +60,6 @@ public class ExercisesJsonHelper {
             }
 
             ContentResolver contentResolver = context.getContentResolver();
-            String updateSelection = Exercises.COLUMN_ID + " = CAST(? AS INTEGER)";
-            String[] updateSelectionArgs = new String[1];
-
             long syncTime = System.currentTimeMillis();
 
             while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
@@ -82,8 +77,7 @@ public class ExercisesJsonHelper {
                 values.put(Exercises.COLUMN_PRACTICE_TIME, exercise.practiceTime);
                 values.put(Exercises.COLUMN_SYNC_TIME, syncTime);
 
-                updateSelectionArgs[0] = Long.toString(exercise.id);
-                updates += contentResolver.update(Exercises.CONTENT_SYNC_URI, values, updateSelection, updateSelectionArgs);
+                contentResolver.insert(Exercises.CONTENT_SYNC_URI, values);
             }
         } finally {
             input.close();
@@ -91,9 +85,7 @@ public class ExercisesJsonHelper {
 
         // TODO: delete non-synced exercises
 
-        if (updates > 0) {
-            context.getContentResolver().notifyChange(Exercises.CONTENT_URI, null);
-        }
+        context.getContentResolver().notifyChange(Exercises.CONTENT_URI, null);
     }
 
     public static void asyncImportToJson(final Context context, final InputStream input) {
