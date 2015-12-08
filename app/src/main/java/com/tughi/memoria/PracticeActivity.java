@@ -35,7 +35,9 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
     private static final int EXERCISE_RATING = 4;
 
     private AudioManager audioManager;
+
     private TextToSpeech textToSpeech;
+    private boolean textToSpeechReady;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +55,11 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
         textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if (textToSpeech.isLanguageAvailable(Locale.JAPAN) >= TextToSpeech.LANG_AVAILABLE) {
-                    textToSpeech.setLanguage(Locale.JAPAN);
+                if (status == TextToSpeech.SUCCESS) {
+                    if (textToSpeech.isLanguageAvailable(Locale.JAPAN) >= TextToSpeech.LANG_AVAILABLE) {
+                        textToSpeech.setLanguage(Locale.JAPAN);
+                        textToSpeechReady = true;
+                    }
                 }
             }
         });
@@ -64,7 +69,9 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     protected void onDestroy() {
-        textToSpeech.shutdown();
+        if (textToSpeech != null) {
+            textToSpeech.shutdown();
+        }
 
         super.onDestroy();
     }
@@ -168,7 +175,7 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
 
     @SuppressWarnings("deprecation")
     protected void speak(String scope) {
-        if (audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) > 0) {
+        if (textToSpeechReady && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) > 0) {
             textToSpeech.speak(scope, TextToSpeech.QUEUE_FLUSH, null);
         }
     }
