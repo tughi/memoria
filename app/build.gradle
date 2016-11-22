@@ -8,15 +8,15 @@ repositories {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.1'
 
     defaultConfig {
-        applicationId "com.tughi.memoria"
+        applicationId 'com.tughi.memoria'
         minSdkVersion 19
-        targetSdkVersion 23
-        versionCode 10101
-        versionName "1.1.1"
+        targetSdkVersion 25
+        versionCode 20000
+        versionName '2.0.0'
     }
 
     buildTypes {
@@ -33,14 +33,14 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.tughi.android:sqlite-open-helper:0.5'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.3'
 }
 
 task generateDrawables << {
-    if ("which inkscape".execute().waitFor() != 0) {
-        println("Inkscape could not be found in the PATH.")
+    if ('which inkscape'.execute().waitFor() != 0) {
+        println('Inkscape could not be found in the PATH.')
         return
     }
 
