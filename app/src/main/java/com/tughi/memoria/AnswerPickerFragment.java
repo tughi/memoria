@@ -91,23 +91,25 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
             answerButton.setTag(R.id.answer_button_exercise, exercise);
 
             int count = cursor.getCount();
-            while (!answerButtons.isEmpty()) {
-                int wrongPosition = random.nextInt(Math.min(30, count));
-                if (cursor.moveToPosition(wrongPosition) && cursor.getLong(EXERCISE_ID) != getArguments().getLong(Exercises.COLUMN_ID)) {
-                    PracticeExercise answer = new PracticeExercise(
-                            cursor.getLong(EXERCISE_ID),
-                            cursor.getString(EXERCISE_SCOPE),
-                            cursor.getString(EXERCISE_SCOPE_LETTERS),
-                            cursor.getString(EXERCISE_DEFINITION),
-                            cursor.getInt(EXERCISE_RATING)
-                    );
+            if (count > 0) {
+                while (!answerButtons.isEmpty()) {
+                    int wrongPosition = random.nextInt(Math.min(30, count));
+                    if (cursor.moveToPosition(wrongPosition) && cursor.getLong(EXERCISE_ID) != getArguments().getLong(Exercises.COLUMN_ID)) {
+                        PracticeExercise answer = new PracticeExercise(
+                                cursor.getLong(EXERCISE_ID),
+                                cursor.getString(EXERCISE_SCOPE),
+                                cursor.getString(EXERCISE_SCOPE_LETTERS),
+                                cursor.getString(EXERCISE_DEFINITION),
+                                cursor.getInt(EXERCISE_RATING)
+                        );
 
-                    answerButton = answerButtons.remove(random.nextInt(answerButtons.size()));
-                    boolean solution = exercise.definition.equals(answer.definition);
-                    answerButton.setBackgroundResource(solution ? R.drawable.correct_picker_button : R.drawable.wrong_picker_button);
-                    answerButton.setText(invert ? answer.scope : answer.definition);
-                    answerButton.setTag(R.id.answer_button_solution, solution);
-                    answerButton.setTag(R.id.answer_button_exercise, invert ? answer : exercise);
+                        answerButton = answerButtons.remove(random.nextInt(answerButtons.size()));
+                        boolean solution = exercise.definition.equals(answer.definition);
+                        answerButton.setBackgroundResource(solution ? R.drawable.correct_picker_button : R.drawable.wrong_picker_button);
+                        answerButton.setText(invert ? answer.scope : answer.definition);
+                        answerButton.setTag(R.id.answer_button_solution, solution);
+                        answerButton.setTag(R.id.answer_button_exercise, invert ? answer : exercise);
+                    }
                 }
             }
 
