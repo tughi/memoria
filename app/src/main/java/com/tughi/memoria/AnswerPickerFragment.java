@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,7 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
         PracticeExercise exercise = getExercise();
 
         TextView questionTextView = (TextView) view.findViewById(R.id.question);
-        questionTextView.setText(invert ? exercise.definition : exercise.scope);
+        questionTextView.setText(invert ? Html.fromHtml(exercise.definition) : exercise.scope);
 
         answer1Button = (AnswerButton) view.findViewById(R.id.answer_1);
         answer1Button.setOnClickListener(this);
@@ -86,7 +87,7 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
 
             AnswerButton answerButton = answerButtons.remove(random.nextInt(answerButtons.size()));
             answerButton.setBackgroundResource(R.drawable.correct_picker_button);
-            answerButton.setText(invert ? exercise.scope : exercise.definition);
+            answerButton.setText(invert ? exercise.scope : Html.fromHtml(exercise.definition));
             answerButton.setTag(R.id.answer_button_solution, true);
             answerButton.setTag(R.id.answer_button_exercise, exercise);
 
@@ -106,7 +107,7 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
                         answerButton = answerButtons.remove(random.nextInt(answerButtons.size()));
                         boolean solution = exercise.definition.equals(answer.definition);
                         answerButton.setBackgroundResource(solution ? R.drawable.correct_picker_button : R.drawable.wrong_picker_button);
-                        answerButton.setText(invert ? answer.scope : answer.definition);
+                        answerButton.setText(invert ? answer.scope : Html.fromHtml(answer.definition));
                         answerButton.setTag(R.id.answer_button_solution, solution);
                         answerButton.setTag(R.id.answer_button_exercise, invert ? answer : exercise);
                     }

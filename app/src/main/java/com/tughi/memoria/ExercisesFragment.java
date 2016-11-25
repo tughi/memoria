@@ -1,7 +1,5 @@
 package com.tughi.memoria;
 
-import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,25 +9,18 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.Html;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.FileNotFoundException;
 import java.text.DateFormat;
 
 public class ExercisesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    private static final int REQUEST_EXPORT_DOCUMENT = 1;
-    private static final int REQUEST_IMPORT_DOCUMENT = 2;
 
     private static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
@@ -54,67 +45,7 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setHasOptionsMenu(true);
-
         getLoaderManager().initLoader(0, null, this);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_EXPORT_DOCUMENT) {
-            if (resultCode == Activity.RESULT_OK) {
-                FragmentActivity activity = getActivity();
-                ContentResolver contentResolver = activity.getContentResolver();
-                try {
-                    ExercisesJsonHelper.asyncExportToJson(activity, contentResolver.openOutputStream(data.getData()));
-                } catch (FileNotFoundException exception) {
-                    Log.e(getClass().getName(), "Failed to open the document", exception);
-                }
-            }
-        } else if (requestCode == REQUEST_IMPORT_DOCUMENT) {
-            if (resultCode == Activity.RESULT_OK) {
-                FragmentActivity activity = getActivity();
-                ContentResolver contentResolver = activity.getContentResolver();
-                try {
-                    ExercisesJsonHelper.asyncImportToJson(activity, contentResolver.openInputStream(data.getData()));
-                } catch (FileNotFoundException exception) {
-                    Log.e(getClass().getName(), "Failed to open the document", exception);
-                }
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-
-        inflater.inflate(R.menu.exercises_fragment, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.add:
-                startActivity(new Intent(getActivity(), ExerciseEditActivity.class));
-                return true;
-            case R.id.import_exercises:
-                Intent importIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                        .addCategory(Intent.CATEGORY_OPENABLE)
-                        .setType("application/json");
-                startActivityForResult(importIntent, REQUEST_IMPORT_DOCUMENT);
-                return true;
-            case R.id.export_exercises:
-                Intent exportIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
-                        .addCategory(Intent.CATEGORY_OPENABLE)
-                        .setType("application/json")
-                        .putExtra(Intent.EXTRA_TITLE, "exercises.json");
-                startActivityForResult(exportIntent, REQUEST_EXPORT_DOCUMENT);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -187,7 +118,7 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
 
             Cursor cursor = getItem(position);
             ((TextView) convertView.findViewById(R.id.scope)).setText(cursor.getString(EXERCISE_SCOPE));
-            ((TextView) convertView.findViewById(R.id.definition)).setText(cursor.getString(EXERCISE_DEFINITION));
+            ((TextView) convertView.findViewById(R.id.definition)).setText(Html.fromHtml(cursor.getString(EXERCISE_DEFINITION)));
 
 
             TextView statusTextView = (TextView) convertView.findViewById(R.id.status);

@@ -7,6 +7,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -44,7 +45,7 @@ public class AnswerInputFragment extends PracticeFragment implements LoaderManag
         PracticeExercise exercise = getExercise();
 
         TextView questionTextView = (TextView) view.findViewById(R.id.question);
-        questionTextView.setText(exercise.definition);
+        questionTextView.setText(Html.fromHtml(exercise.definition));
 
         answerEditText = (EditText) view.findViewById(R.id.answer);
         answerEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {

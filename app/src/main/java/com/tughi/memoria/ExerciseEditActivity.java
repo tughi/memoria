@@ -124,17 +124,13 @@ public class ExerciseEditActivity extends AppCompatActivity implements LoaderMan
             try {
                 ContentResolver contentResolver = context.getContentResolver();
                 Uri uri = exerciseUri;
-                long currentTime = System.currentTimeMillis();
                 if (uri == null) {
                     // create new exercise
 
-                    values.put(Exercises.COLUMN_CREATED_TIME, currentTime);
-                    values.put(Exercises.COLUMN_UPDATED_TIME, currentTime);
                     uri = contentResolver.insert(Exercises.CONTENT_URI, values);
                 } else {
                     // update exercise
 
-                    values.put(Exercises.COLUMN_UPDATED_TIME, currentTime);
                     if (contentResolver.update(uri, values, null, null) <= 0) {
                         uri = null;
                     }

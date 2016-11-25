@@ -6,10 +6,10 @@ public class Exercises {
 
     public static final Uri CONTENT_URI = Uri.parse("content://" + ExercisesProvider.AUTHORITY + "/exercises");
     public static final Uri CONTENT_SYNC_URI = Uri.withAppendedPath(CONTENT_URI, "sync");
+    public static final Uri CONTENT_USER_URI = Uri.withAppendedPath(CONTENT_URI, "user");
 
-    public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_CREATED_TIME = "created_time";
-    public static final String COLUMN_UPDATED_TIME = "updated_time";
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_LESSON_ID = "lesson_id";
     public static final String COLUMN_SCOPE = "scope";
     public static final String COLUMN_SCOPE_LETTERS = "scope_letters";
     public static final String COLUMN_DEFINITION = "definition";
@@ -17,7 +17,6 @@ public class Exercises {
     public static final String COLUMN_PRACTICE_TIME = "practice_time";
     public static final String COLUMN_RATING = "rating";
     public static final String COLUMN_DISABLED = "disabled";
-    public static final String COLUMN_SYNC_TIME = "sync_time";
     public static final String COLUMN_NEW = "new";
 
 }

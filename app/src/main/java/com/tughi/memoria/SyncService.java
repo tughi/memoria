@@ -166,27 +166,36 @@ public class SyncService extends IntentService {
 
             final ContentResolver contentResolver = getContentResolver();
 
-            final long syncTime = System.currentTimeMillis();
-            final ContentValues exercise = new ContentValues();
+            final ContentValues exerciseSync = new ContentValues();
+            final ContentValues exerciseUser = new ContentValues();
 
             while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
                 Object[] values = jsonParser.readValueAs(Object[].class);
 
-                exercise.put(Exercises.COLUMN_ID, ((Number) values[0]).longValue());
-                exercise.put(Exercises.COLUMN_CREATED_TIME, syncTime);
-                exercise.put(Exercises.COLUMN_UPDATED_TIME, syncTime);
-                exercise.put(Exercises.COLUMN_SCOPE, (String) values[2]);
-                exercise.put(Exercises.COLUMN_SCOPE_LETTERS, (String) values[2]);
-                exercise.put(Exercises.COLUMN_DEFINITION, (String) values[3]);
-                exercise.put(Exercises.COLUMN_NOTES, (String) values[4]);
-                // FIXME
-//                exercise.put(Exercises.COLUMN_RATING, exercise.rating);
-//                exercise.put(Exercises.COLUMN_PRACTICE_TIME, exercise.practiceTime);
-//                exercise.put(Exercises.COLUMN_DISABLED, exercise.disabled);
-//                exercise.put(Exercises.COLUMN_SYNC_TIME, syncTime);
-                Log.d(getClass().getName(), "exercise " + exercise);
+                String scope = (String) values[2];
+                StringBuilder scopeLetters = new StringBuilder(scope.length());
+                for (char c : scope.toCharArray()) {
+                    if (Character.isLetterOrDigit(c)) {
+                        scopeLetters.append(c);
+                    }
+                }
 
-                contentResolver.insert(Exercises.CONTENT_SYNC_URI, exercise);
+                exerciseSync.put(Exercises.COLUMN_ID, ((Number) values[0]).longValue());
+                exerciseSync.put(Exercises.COLUMN_LESSON_ID, ((Number) values[1]).longValue());
+                exerciseSync.put(Exercises.COLUMN_SCOPE, scope);
+                exerciseSync.put(Exercises.COLUMN_SCOPE_LETTERS, scopeLetters.toString());
+                exerciseSync.put(Exercises.COLUMN_DEFINITION, (String) values[3]);
+                exerciseSync.put(Exercises.COLUMN_NOTES, (String) values[4]);
+                // FIXME
+//                exerciseSync.put(Exercises.COLUMN_RATING, exerciseSync.rating);
+//                exerciseSync.put(Exercises.COLUMN_PRACTICE_TIME, exerciseSync.practiceTime);
+//                exerciseSync.put(Exercises.COLUMN_DISABLED, exerciseSync.disabled);
+//                exerciseSync.put(Exercises.COLUMN_SYNC_TIME, syncTime);
+
+                contentResolver.insert(Exercises.CONTENT_SYNC_URI, exerciseSync);
+
+                exerciseUser.put(Exercises.COLUMN_ID, ((Number) values[0]).longValue());
+                contentResolver.insert(Exercises.CONTENT_USER_URI, exerciseUser);
             }
         }
     }

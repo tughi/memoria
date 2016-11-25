@@ -1,11 +1,9 @@
 package com.tughi.memoria;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -260,19 +258,13 @@ public abstract class PracticeFragment extends Fragment {
             final Integer newRating = (Integer) params[1];
             final Long newPracticeTime = (Long) params[2];
 
+            ContentResolver contentResolver = context.getContentResolver();
+
             ContentValues values = new ContentValues();
-            values.put(Exercises.COLUMN_UPDATED_TIME, System.currentTimeMillis());
             values.put(Exercises.COLUMN_RATING, newRating);
             values.put(Exercises.COLUMN_PRACTICE_TIME, newPracticeTime);
-            int result = context.getContentResolver()
-                    .update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exercise.id), values, null, null);
 
-            if (result > 0) {
-                Intent intent = new Intent(context, SyncService.class);
-                PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-                AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 30 * TIME_MINUTE, pendingIntent);
-            }
+            contentResolver.update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exercise.id), values, null, null);
 
             return Boolean.TRUE;
         }
