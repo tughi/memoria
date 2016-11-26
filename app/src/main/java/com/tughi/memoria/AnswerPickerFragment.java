@@ -67,8 +67,8 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         PracticeExercise exercise = getExercise();
-        String selection = Exercises.COLUMN_ID + " != " + exercise.id + " AND " + Exercises.COLUMN_DISABLED + " = 0 AND " + Exercises.COLUMN_RATING + " > 0";
-        String sortOrder = "ABS(LENGTH(" + Exercises.COLUMN_SCOPE_LETTERS + ") - " + exercise.scopeLetters.length() + "), " + Exercises.COLUMN_RATING + " DESC";
+        String selection = Exercises.COLUMN_ID + " != " + exercise.id + " AND " + Exercises.COLUMN_DISABLED + " = 0 AND " + Exercises.COLUMN_PRACTICE_COUNT + " > 0";
+        String sortOrder = "ABS(LENGTH(" + Exercises.COLUMN_SCOPE_LETTERS + ") - " + exercise.scopeLetters.length() + "), " + Exercises.COLUMN_EASINESS_FACTOR + " DESC";
         return new CursorLoader(getActivity(), Exercises.CONTENT_URI, EXERCISES_PROJECTION, selection, null, sortOrder);
     }
 
@@ -101,7 +101,9 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
                                 cursor.getString(EXERCISE_SCOPE),
                                 cursor.getString(EXERCISE_SCOPE_LETTERS),
                                 cursor.getString(EXERCISE_DEFINITION),
-                                cursor.getInt(EXERCISE_RATING)
+                                cursor.getDouble(EXERCISE_EASINESS_FACTOR),
+                                cursor.getInt(EXERCISE_PRACTICE_COUNT),
+                                cursor.getLong(EXERCISE_PRACTICE_INTERVAL)
                         );
 
                         answerButton = answerButtons.remove(random.nextInt(answerButtons.size()));
@@ -128,7 +130,7 @@ public class AnswerPickerFragment extends PracticeFragment implements LoaderMana
         Boolean solution = (Boolean) view.getTag(R.id.answer_button_solution);
         PracticeExercise answer = (PracticeExercise) view.getTag(R.id.answer_button_exercise);
 
-        submitAnswer(solution == Boolean.TRUE ? answer : null);
+        submitAnswer(solution == Boolean.TRUE ? answer : null, solution == Boolean.TRUE ? 5 : 0);
 
         if (!solution) {
             if (answer1Button.getTag(R.id.answer_button_solution) == Boolean.TRUE) {

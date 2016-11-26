@@ -26,7 +26,7 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
             Exercises.COLUMN_ID,
             Exercises.COLUMN_SCOPE,
             Exercises.COLUMN_DEFINITION,
-            Exercises.COLUMN_RATING,
+            Exercises.COLUMN_EASINESS_FACTOR,
             Exercises.COLUMN_PRACTICE_TIME,
             Exercises.COLUMN_DISABLED,
             Exercises.COLUMN_NEW,
@@ -35,7 +35,7 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
     private static final int EXERCISE_ID = 0;
     private static final int EXERCISE_SCOPE = 1;
     private static final int EXERCISE_DEFINITION = 2;
-    private static final int EXERCISE_RATING = 3;
+    private static final int EXERCISE_EASINESS_FACTOR = 3;
     private static final int EXERCISE_PRACTICE_TIME = 4;
     private static final int EXERCISE_DISABLED = 5;
 
@@ -126,11 +126,11 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
             if (disabled != 0) {
                 statusTextView.setText(R.string.disabled);
             } else {
-                int rating = cursor.getInt(EXERCISE_RATING);
+                int rating = cursor.getInt(EXERCISE_EASINESS_FACTOR);
                 if (rating == 0) {
                     statusTextView.setText(R.string.scheduled);
                 } else {
-                    String status = cursor.getString(EXERCISE_RATING);
+                    String status = cursor.getString(EXERCISE_EASINESS_FACTOR);
 
                     long practiceTime = cursor.getLong(EXERCISE_PRACTICE_TIME);
                     if (DateUtils.isToday(practiceTime)) {

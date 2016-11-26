@@ -9,14 +9,18 @@ public class PracticeExercise implements Parcelable {
     public final String scope;
     public final String scopeLetters;
     public final String definition;
-    public final int rating;
+    public final double easinessFactor;
+    public final int practiceCount;
+    public final long practiceInterval;
 
-    public PracticeExercise(long id, String scope, String scopeLetters, String definition, int rating) {
+    public PracticeExercise(long id, String scope, String scopeLetters, String definition, double easinessFactor, int practiceCount, long practiceInterval) {
         this.id = id;
         this.scope = scope;
         this.scopeLetters = scopeLetters;
         this.definition = definition;
-        this.rating = rating;
+        this.easinessFactor = easinessFactor;
+        this.practiceCount = practiceCount;
+        this.practiceInterval = practiceInterval;
     }
 
     private PracticeExercise(Parcel in) {
@@ -24,7 +28,9 @@ public class PracticeExercise implements Parcelable {
         scope = in.readString();
         scopeLetters = in.readString();
         definition = in.readString();
-        rating = in.readInt();
+        easinessFactor = in.readDouble();
+        practiceCount = in.readInt();
+        practiceInterval = in.readLong();
     }
 
     public static final Creator<PracticeExercise> CREATOR = new Creator<PracticeExercise>() {
@@ -50,7 +56,9 @@ public class PracticeExercise implements Parcelable {
         dest.writeString(scope);
         dest.writeString(scopeLetters);
         dest.writeString(definition);
-        dest.writeInt(rating);
+        dest.writeDouble(easinessFactor);
+        dest.writeInt(practiceCount);
+        dest.writeLong(practiceInterval);
     }
 
     @Override
@@ -61,7 +69,9 @@ public class PracticeExercise implements Parcelable {
         PracticeExercise exercise = (PracticeExercise) other;
 
         return id == exercise.id &&
-                rating == exercise.rating &&
+                easinessFactor == exercise.easinessFactor &&
+                practiceCount == exercise.practiceCount &&
+                practiceInterval == exercise.practiceInterval &&
                 scope.equals(exercise.scope) &&
                 scopeLetters.equals(exercise.scopeLetters) &&
                 definition.equals(exercise.definition);

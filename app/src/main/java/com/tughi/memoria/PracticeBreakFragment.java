@@ -26,7 +26,7 @@ public class PracticeBreakFragment extends Fragment implements Handler.Callback,
             Exercises.COLUMN_ID,
             Exercises.COLUMN_PRACTICE_TIME,
     };
-    private static final String EXERCISES_SELECTION = Exercises.COLUMN_DISABLED + " = 0 AND " + Exercises.COLUMN_RATING + " > 0";
+    private static final String EXERCISES_SELECTION = Exercises.COLUMN_DISABLED + " = 0 AND " + Exercises.COLUMN_PRACTICE_COUNT + " > 0";
     private static final String EXERCISES_SORT_ORDER = Exercises.COLUMN_PRACTICE_TIME;
     private static final int EXERCISE_ID = 0;
     private static final int EXERCISE_PRACTICE_TIME = 1;

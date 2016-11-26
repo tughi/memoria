@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,63 +25,22 @@ public abstract class PracticeFragment extends Fragment {
 
     public static final int PRACTICE_TYPES = 5;
 
-    private static final long TIME_SECOND = 1000;
-    private static final long TIME_MINUTE = 60 * TIME_SECOND;
-    private static final long TIME_HOUR = 60 * TIME_MINUTE;
-    private static final long TIME_DAY = 24 * TIME_HOUR;
-    private static final long TIME_WEEK = 7 * TIME_DAY;
-
-    private static final long[] PRACTICE_TIMES = {
-            0,
-            TIME_SECOND,
-            2 * TIME_SECOND,
-            3 * TIME_SECOND,
-            5 * TIME_SECOND,
-            10 * TIME_SECOND,
-            15 * TIME_SECOND,
-            30 * TIME_SECOND,
-            TIME_MINUTE,
-            2 * TIME_MINUTE,
-            3 * TIME_MINUTE,
-            5 * TIME_MINUTE,
-            10 * TIME_MINUTE,
-            15 * TIME_MINUTE,
-            30 * TIME_MINUTE,
-            TIME_HOUR,
-            2 * TIME_HOUR,
-            3 * TIME_HOUR,
-            6 * TIME_HOUR,
-            9 * TIME_HOUR,
-            12 * TIME_HOUR,
-            TIME_DAY,
-            2 * TIME_DAY,
-            3 * TIME_DAY,
-            4 * TIME_DAY,
-            5 * TIME_DAY,
-            6 * TIME_DAY,
-            TIME_WEEK,
-            2 * TIME_WEEK,
-            3 * TIME_WEEK,
-            5 * TIME_WEEK,
-            8 * TIME_WEEK,
-            13 * TIME_WEEK,
-            21 * TIME_WEEK,
-            34 * TIME_WEEK,
-            55 * TIME_WEEK,
-    };
-
     protected static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
             Exercises.COLUMN_SCOPE,
             Exercises.COLUMN_SCOPE_LETTERS,
             Exercises.COLUMN_DEFINITION,
-            Exercises.COLUMN_RATING,
+            Exercises.COLUMN_EASINESS_FACTOR,
+            Exercises.COLUMN_PRACTICE_COUNT,
+            Exercises.COLUMN_PRACTICE_INTERVAL,
     };
     protected static final int EXERCISE_ID = 0;
     protected static final int EXERCISE_SCOPE = 1;
     protected static final int EXERCISE_SCOPE_LETTERS = 2;
     protected static final int EXERCISE_DEFINITION = 3;
-    protected static final int EXERCISE_RATING = 4;
+    protected static final int EXERCISE_EASINESS_FACTOR = 4;
+    protected static final int EXERCISE_PRACTICE_COUNT = 5;
+    protected static final int EXERCISE_PRACTICE_INTERVAL = 6;
 
     private static final Handler mainHandler = new Handler();
 
@@ -103,7 +64,7 @@ public abstract class PracticeFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        switch (exercise.rating) {
+        switch ((int) Math.round(exercise.easinessFactor)) {
             case 0:
                 view.findViewById(R.id.rating_01).setVisibility(View.INVISIBLE);
             case 1:
@@ -189,17 +150,19 @@ public abstract class PracticeFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.skip:
+                /* TODO: reschedule skipped exercise
                 int newRating = Math.max(exercise.rating - 1, 1);
                 long newPracticeTime = System.currentTimeMillis() + TIME_HOUR;
 
                 new UpdateExerciseTask(getActivity()).execute(exercise, newRating, newPracticeTime);
+                */
 
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    protected void submitAnswer(PracticeExercise solution) {
+    protected void submitAnswer(PracticeExercise solution, int solutionQuality) {
         if (BuildConfig.DEBUG) {
             if (solution != null) {
                 if (!solution.scopeLetters.equals(exercise.scopeLetters) && !solution.definition.equals(exercise.definition)) {
@@ -208,24 +171,34 @@ public abstract class PracticeFragment extends Fragment {
             }
         }
 
-        final long currentTime = System.currentTimeMillis();
+        final double newEasinessFactor;
+        switch (solutionQuality) {
+            case 0:
+                newEasinessFactor = Math.max(exercise.easinessFactor - 0.8, 1.3);
+                break;
+            case 1:
+                newEasinessFactor = Math.max(exercise.easinessFactor - 0.54, 1.3);
+                break;
+            case 2:
+                newEasinessFactor = Math.max(exercise.easinessFactor - 0.32, 1.3);
+                break;
+            case 3:
+                newEasinessFactor = Math.max(exercise.easinessFactor - 0.14, 1.3);
+                break;
+            case 4:
+                newEasinessFactor = Math.max(exercise.easinessFactor, 1.3);
+                break;
+            default:
+                newEasinessFactor = Math.max(exercise.easinessFactor + 0.1, 1.3);
+                break;
+        }
 
-        final int newRating;
-        final long newPracticeTime;
-        if (solution == null) {
-            int newRatingValue = Math.max(exercise.rating * 3 / 4, 1);
-            if (newRatingValue > 1 && newRatingValue % PRACTICE_TYPES == exercise.rating % PRACTICE_TYPES) {
-                newRatingValue--;
-            }
+        final int newPracticeCount = solutionQuality == 0 ? 1 : exercise.practiceCount + 1;
+        final long newPracticeInterval = newPracticeCount > 2 ? Math.round(exercise.practiceInterval * newEasinessFactor) : newPracticeCount == 2 ? 10000 : 3000;
+        final long newPracticeTime = System.currentTimeMillis() + newPracticeInterval;
 
-            newRating = newRatingValue;
-            newPracticeTime = 0;
-        } else if (solution == exercise) {
-            newRating = Math.min(exercise.rating + 1, PRACTICE_TIMES.length - 1);
-            newPracticeTime = (long) (currentTime + PRACTICE_TIMES[newRating - 1] + Math.random() * (PRACTICE_TIMES[newRating] - PRACTICE_TIMES[newRating - 1]));
-        } else {
-            newRating = Math.max(exercise.rating + 1, 1);
-            newPracticeTime = currentTime + 5 * TIME_MINUTE;
+        if (BuildConfig.DEBUG) {
+            Log.d(getClass().getName(), exercise.scope + ": " + newEasinessFactor + " - " + newPracticeCount + " - " + DateUtils.getRelativeTimeSpanString(getContext(), newPracticeTime));
         }
 
         PracticeActivity activity = (PracticeActivity) getActivity();
@@ -238,10 +211,10 @@ public abstract class PracticeFragment extends Fragment {
             @Override
             public void run() {
                 if (isResumed()) {
-                    new UpdateExerciseTask(context).execute(exercise, newRating, newPracticeTime);
+                    new UpdateExerciseTask(context).execute(exercise, newEasinessFactor, newPracticeCount, newPracticeInterval, newPracticeTime);
                 }
             }
-        }, solution == null ? 1500 : 500);
+        }, solutionQuality == 5 ? 500 : 1500);
     }
 
     protected static class UpdateExerciseTask extends AsyncTask<Object, Void, Boolean> {
@@ -255,13 +228,17 @@ public abstract class PracticeFragment extends Fragment {
         @Override
         protected Boolean doInBackground(Object... params) {
             final PracticeExercise exercise = (PracticeExercise) params[0];
-            final Integer newRating = (Integer) params[1];
-            final Long newPracticeTime = (Long) params[2];
+            final Double newEasinessFactor = (Double) params[1];
+            final Integer newPracticeCount = (Integer) params[2];
+            final Long newPracticeInterval = (Long) params[3];
+            final Long newPracticeTime = (Long) params[4];
 
             ContentResolver contentResolver = context.getContentResolver();
 
             ContentValues values = new ContentValues();
-            values.put(Exercises.COLUMN_RATING, newRating);
+            values.put(Exercises.COLUMN_EASINESS_FACTOR, newEasinessFactor);
+            values.put(Exercises.COLUMN_PRACTICE_COUNT, newPracticeCount);
+            values.put(Exercises.COLUMN_PRACTICE_INTERVAL, newPracticeInterval);
             values.put(Exercises.COLUMN_PRACTICE_TIME, newPracticeTime);
 
             contentResolver.update(ContentUris.withAppendedId(Exercises.CONTENT_URI, exercise.id), values, null, null);

@@ -41,9 +41,11 @@ public class ExercisesProvider extends ContentProvider {
         projection.put(Exercises.COLUMN_DEFINITION, Exercises.COLUMN_DEFINITION);
         projection.put(Exercises.COLUMN_NOTES, Exercises.COLUMN_NOTES);
         projection.put(Exercises.COLUMN_PRACTICE_TIME, Exercises.COLUMN_PRACTICE_TIME);
-        projection.put(Exercises.COLUMN_RATING, Exercises.COLUMN_RATING);
+        projection.put(Exercises.COLUMN_EASINESS_FACTOR, Exercises.COLUMN_EASINESS_FACTOR);
+        projection.put(Exercises.COLUMN_PRACTICE_COUNT, Exercises.COLUMN_PRACTICE_COUNT);
+        projection.put(Exercises.COLUMN_PRACTICE_INTERVAL, Exercises.COLUMN_PRACTICE_INTERVAL);
         projection.put(Exercises.COLUMN_DISABLED, Exercises.COLUMN_DISABLED);
-        projection.put(Exercises.COLUMN_NEW, "(" + Exercises.COLUMN_RATING + " = 0) AS " + Exercises.COLUMN_NEW);
+        projection.put(Exercises.COLUMN_NEW, "(" + Exercises.COLUMN_PRACTICE_COUNT + " = 0) AS " + Exercises.COLUMN_NEW);
     }
 
     private DatabaseOpenHelper helper;

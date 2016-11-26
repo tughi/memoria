@@ -14,8 +14,10 @@ public class Exercises {
     public static final String COLUMN_SCOPE_LETTERS = "scope_letters";
     public static final String COLUMN_DEFINITION = "definition";
     public static final String COLUMN_NOTES = "notes";
+    public static final String COLUMN_EASINESS_FACTOR = "easiness_factor";
+    public static final String COLUMN_PRACTICE_COUNT = "practice_count";
+    public static final String COLUMN_PRACTICE_INTERVAL = "practice_interval";
     public static final String COLUMN_PRACTICE_TIME = "practice_time";
-    public static final String COLUMN_RATING = "rating";
     public static final String COLUMN_DISABLED = "disabled";
     public static final String COLUMN_NEW = "new";
 

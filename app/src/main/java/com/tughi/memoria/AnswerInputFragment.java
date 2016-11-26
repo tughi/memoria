@@ -98,7 +98,9 @@ public class AnswerInputFragment extends PracticeFragment implements LoaderManag
                         cursor.getString(EXERCISE_SCOPE),
                         cursor.getString(EXERCISE_SCOPE_LETTERS),
                         cursor.getString(EXERCISE_DEFINITION),
-                        cursor.getInt(EXERCISE_RATING)
+                        cursor.getDouble(EXERCISE_EASINESS_FACTOR),
+                        cursor.getInt(EXERCISE_PRACTICE_COUNT),
+                        cursor.getLong(EXERCISE_PRACTICE_INTERVAL)
                 );
 
                 solutions.add(solution);
@@ -119,7 +121,7 @@ public class AnswerInputFragment extends PracticeFragment implements LoaderManag
 
     @SuppressWarnings("deprecation")
     private void onSubmit(PracticeExercise solution) {
-        submitAnswer(solution);
+        submitAnswer(solution, solution != null ? 5 : 0);
 
         answerEditText.setEnabled(false);
         answerEditText.setBackgroundColor(getResources().getColor(solution != null ? R.color.correct : R.color.wrong));

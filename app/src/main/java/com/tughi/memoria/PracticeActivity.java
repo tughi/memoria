@@ -23,7 +23,9 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
             Exercises.COLUMN_SCOPE,
             Exercises.COLUMN_SCOPE_LETTERS,
             Exercises.COLUMN_DEFINITION,
-            Exercises.COLUMN_RATING,
+            Exercises.COLUMN_EASINESS_FACTOR,
+            Exercises.COLUMN_PRACTICE_COUNT,
+            Exercises.COLUMN_PRACTICE_INTERVAL,
             Exercises.COLUMN_NEW,
     };
     private static final String EXERCISES_SELECTION = Exercises.COLUMN_DISABLED + " = 0 AND strftime('%s', 'now') * 1000 - " + Exercises.COLUMN_PRACTICE_TIME + " > 0";
@@ -32,7 +34,9 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
     private static final int EXERCISE_SCOPE = 1;
     private static final int EXERCISE_SCOPE_LETTERS = 2;
     private static final int EXERCISE_DEFINITION = 3;
-    private static final int EXERCISE_RATING = 4;
+    private static final int EXERCISE_EASINESS_FACTOR = 4;
+    private static final int EXERCISE_PRACTICE_COUNT = 5;
+    private static final int EXERCISE_PRACTICE_INTERVAL = 6;
 
     private AudioManager audioManager;
 
@@ -122,7 +126,9 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
                     cursor.getString(EXERCISE_SCOPE),
                     cursor.getString(EXERCISE_SCOPE_LETTERS),
                     cursor.getString(EXERCISE_DEFINITION),
-                    cursor.getInt(EXERCISE_RATING)
+                    cursor.getFloat(EXERCISE_EASINESS_FACTOR),
+                    cursor.getInt(EXERCISE_PRACTICE_COUNT),
+                    cursor.getLong(EXERCISE_PRACTICE_INTERVAL)
             );
         }
 
@@ -144,7 +150,7 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
         args.putParcelable(PracticeFragment.ARG_EXERCISE, practiceExercise);
 
         PracticeFragment practiceFragment;
-        switch (practiceExercise.rating % PracticeFragment.PRACTICE_TYPES) {
+        switch (practiceExercise.practiceCount % PracticeFragment.PRACTICE_TYPES) {
             case 4:
                 practiceFragment = new AnswerInputFragment();
                 break;

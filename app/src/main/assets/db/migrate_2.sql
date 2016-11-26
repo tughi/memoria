@@ -21,7 +21,9 @@ CREATE TABLE exercises_sync (
 -- exercises user table
 CREATE TABLE exercises_user (
     id INTEGER PRIMARY KEY,
-    rating INTEGER NOT NULL DEFAULT 0,
+    easiness_factor REAL NOT NULL DEFAULT 2.5,
+    practice_count INTEGER NOT NULL DEFAULT 0,
+    practice_interval INTEGER NOT NULL DEFAULT 0,
     practice_time INTEGER NOT NULL DEFAULT 0,
     disabled INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (id) REFERENCES exercises_sync (id)
@@ -36,7 +38,9 @@ CREATE VIEW exercises AS
         exercises_sync.scope_letters,
         exercises_sync.definition,
         exercises_sync.notes,
-        exercises_user.rating,
+        exercises_user.easiness_factor,
+        exercises_user.practice_count,
+        exercises_user.practice_interval,
         exercises_user.practice_time,
         exercises_user.disabled
     FROM
