@@ -35,6 +35,11 @@
                 android:inputType="text"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display2" />
 
+            <org.apmem.tools.layouts.FlowLayout
+                android:id="@+id/keys"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
         </LinearLayout>
 
     </LinearLayout>

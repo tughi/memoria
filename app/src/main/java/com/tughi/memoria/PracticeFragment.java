@@ -194,7 +194,7 @@ public abstract class PracticeFragment extends Fragment {
         }
 
         final int newPracticeCount = solutionQuality == 0 ? 1 : exercise.practiceCount + 1;
-        final long newPracticeInterval = newPracticeCount > 2 ? Math.round(exercise.practiceInterval * newEasinessFactor) : newPracticeCount == 2 ? 10000 : 3000;
+        final long newPracticeInterval = newPracticeCount > 2 ? Math.round(exercise.practiceInterval * newEasinessFactor) : newPracticeCount == 2 ? 30000 : 5000;
         final long newPracticeTime = System.currentTimeMillis() + newPracticeInterval;
 
         if (BuildConfig.DEBUG) {
