@@ -1,0 +1,3 @@
+<resources>
+    <dimen name="answer_keyboard_padding">8dp</dimen>
+</resources>

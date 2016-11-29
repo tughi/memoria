@@ -31,14 +31,29 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:hint="@string/answer"
-                android:imeOptions="actionDone"
-                android:inputType="text"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display2" />
+                android:inputType="textMultiLine"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-            <org.apmem.tools.layouts.FlowLayout
+            <com.tughi.memoria.AnswerKeyboardLayout
                 android:id="@+id/keys"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/backspace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/correct_picker_button"
+                    android:clickable="true"
+                    android:drawableStart="@drawable/ic_action_backspace"
+                    android:drawableTint="@android:color/white"
+                    android:foreground="?selectableItemBackground"
+                    android:paddingBottom="8dp"
+                    android:paddingLeft="14dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="8dp" />
+
+            </com.tughi.memoria.AnswerKeyboardLayout>
 
         </LinearLayout>
 

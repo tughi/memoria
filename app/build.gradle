@@ -36,7 +36,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.tughi.android:sqlite-open-helper:0.5'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.3'
-    compile 'org.apmem.tools:layouts:1.10@aar'
 }
 
 task generateDrawables << {

@@ -14,11 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +26,7 @@ public class AnswerInputFragment extends PracticeFragment implements LoaderManag
     private static final String EXERCISES_SELECTION = Exercises.COLUMN_DEFINITION + " = ?";
 
     private EditText answerEditText;
-    private FlowLayout keysLayout;
+    private AnswerKeyboardLayout keysLayout;
 
     private List<PracticeExercise> solutions = new ArrayList<>();
 
@@ -53,6 +50,7 @@ public class AnswerInputFragment extends PracticeFragment implements LoaderManag
         questionTextView.setText(Html.fromHtml(exercise.definition));
 
         answerEditText = (EditText) view.findViewById(R.id.answer);
+        answerEditText.requestFocus();
         answerEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -83,12 +81,22 @@ public class AnswerInputFragment extends PracticeFragment implements LoaderManag
             }
         });
 
-        keysLayout = (FlowLayout) view.findViewById(R.id.keys);
+        keysLayout = (AnswerKeyboardLayout) view.findViewById(R.id.keys);
+        keysLayout.findViewById(R.id.backspace).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Editable text = answerEditText.getText();
+                int textLength = text.length();
+                if (textLength > 0) {
+                    text.delete(textLength - 1, textLength);
+                }
+            }
+        });
 
         View.OnClickListener onKeyClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Button button = (Button) view;
+                TextView button = (TextView) view;
                 answerEditText.getText().append(button.getText());
             }
         };
@@ -99,7 +107,7 @@ public class AnswerInputFragment extends PracticeFragment implements LoaderManag
         char lastKey = 0;
         for (char key : keys) {
             if (key != lastKey) {
-                Button keyButton = (Button) LayoutInflater.from(getContext()).inflate(R.layout.answer_input_key, keysLayout, false);
+                TextView keyButton = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.answer_input_key, keysLayout, false);
                 keyButton.setText(Character.toString(key));
                 keyButton.setOnClickListener(onKeyClickListener);
 
