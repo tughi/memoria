@@ -45,6 +45,8 @@ public class AnswerKeyboardLayout extends ViewGroup {
                 rows = 1;
             }
 
+            key.measure(MeasureSpec.makeMeasureSpec(keyHeight, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(keyHeight, MeasureSpec.EXACTLY));
+
             setMeasuredDimension(widthSize, (keyHeight + padding) * rows);
         } else {
             setMeasuredDimension(widthSize, 0);
