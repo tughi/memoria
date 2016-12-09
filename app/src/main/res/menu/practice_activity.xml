@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/exercises"
-        android:title="@string/exercises" />
+        android:id="@+id/lessons"
+        android:title="@string/lessons" />
     <item
         android:id="@+id/preferences"
         android:title="@string/preferences" />

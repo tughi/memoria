@@ -92,8 +92,8 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.exercises:
-                startActivity(new Intent(this, ExercisesActivity.class));
+            case R.id.lessons:
+                startActivity(new Intent(this, LessonsActivity.class));
                 return true;
             case R.id.preferences:
                 startActivity(new Intent(this, PreferencesActivity.class));

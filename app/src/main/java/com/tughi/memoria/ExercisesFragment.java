@@ -3,6 +3,7 @@ package com.tughi.memoria;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
@@ -21,6 +22,8 @@ import android.widget.TextView;
 import java.text.DateFormat;
 
 public class ExercisesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    public static final String ARG_EXERCISES_URI = "exercises_uri";
 
     private static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
@@ -50,7 +53,8 @@ public class ExercisesFragment extends ListFragment implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), Exercises.CONTENT_URI, EXERCISES_PROJECTION, null, null, EXERCISES_SORT_ORDER);
+        Uri exercisesUri = getArguments().getParcelable(ARG_EXERCISES_URI);
+        return new CursorLoader(getActivity(), exercisesUri, EXERCISES_PROJECTION, null, null, EXERCISES_SORT_ORDER);
     }
 
     @Override

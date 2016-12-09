@@ -141,14 +141,22 @@ public class SyncService extends IntentService {
                 throw new IOException("Unexpected lesson keys");
             }
 
-            final ContentValues lesson = new ContentValues();
+            final ContentResolver contentResolver = getContentResolver();
+
+            final ContentValues lessonSync = new ContentValues();
+            final ContentValues lessonUser = new ContentValues();
 
             while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
                 Object[] values = jsonParser.readValueAs(Object[].class);
 
-                lesson.put("id", ((Number) values[0]).longValue());
-                lesson.put("title", (String) values[1]);
-                Log.d(getClass().getName(), "lesson: " + lesson);
+                lessonSync.put(Lessons.COLUMN_ID, ((Number) values[0]).longValue());
+                lessonSync.put(Lessons.COLUMN_TITLE, (String) values[1]);
+
+                contentResolver.insert(Lessons.CONTENT_SYNC_URI, lessonSync);
+
+                lessonUser.put(Lessons.COLUMN_ID, ((Number) values[0]).longValue());
+
+                contentResolver.insert(Lessons.CONTENT_USER_URI, lessonUser);
             }
         }
     }
