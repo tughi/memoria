@@ -190,12 +190,12 @@ public abstract class PracticeFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.skip:
-                /* TODO: reschedule skipped exercise
-                int newRating = Math.max(exercise.rating - 1, 1);
-                long newPracticeTime = System.currentTimeMillis() + TIME_HOUR;
+                final double newEasinessFactor = getNewEasinessFactor(2);
+                final int newPracticeCount = exercise.practiceCount;
+                final long newPracticeInterval = exercise.practiceInterval;
+                final long newPracticeTime = System.currentTimeMillis() + DateUtils.HOUR_IN_MILLIS;
 
-                new UpdateExerciseTask(getActivity()).execute(exercise, newRating, newPracticeTime);
-                */
+                new UpdateExerciseTask(getActivity()).execute(exercise, newEasinessFactor, newPracticeCount, newPracticeInterval, newPracticeTime);
 
                 return true;
         }
@@ -211,33 +211,12 @@ public abstract class PracticeFragment extends Fragment {
             }
         }
 
-        final double newEasinessFactor;
-        switch (solutionQuality) {
-            case 0:
-                newEasinessFactor = Math.max(exercise.easinessFactor - 0.45, EASINESS_FACTOR_MIN);
-                break;
-            case 1:
-                newEasinessFactor = Math.max(exercise.easinessFactor - 0.34, EASINESS_FACTOR_MIN);
-                break;
-            case 2:
-                newEasinessFactor = Math.max(exercise.easinessFactor - 0.23, EASINESS_FACTOR_MIN);
-                break;
-            case 3:
-                newEasinessFactor = Math.max(exercise.easinessFactor - 0.12, EASINESS_FACTOR_MIN);
-                break;
-            case 4:
-                newEasinessFactor = exercise.easinessFactor;
-                break;
-            default:
-                newEasinessFactor = exercise.easinessFactor + 0.11;
-                break;
-        }
-
-        updateRatingViews(getView(), newEasinessFactor);
-
+        final double newEasinessFactor = getNewEasinessFactor(solutionQuality);
         final int newPracticeCount = solutionQuality == 0 ? 1 : exercise.practiceCount + 1;
         final long newPracticeInterval = newEasinessFactor < 2.7 ? 3000 : newPracticeCount > 2 ? Math.round(exercise.practiceInterval * newEasinessFactor) : newPracticeCount == 2 ? 30000 : 5000;
         final long newPracticeTime = System.currentTimeMillis() + newPracticeInterval;
+
+        updateRatingViews(getView(), newEasinessFactor);
 
         if (BuildConfig.DEBUG) {
             Log.d(getClass().getName(), exercise.scope + ": " + newEasinessFactor + " - " + newPracticeCount + " - " + DateUtils.getRelativeTimeSpanString(getContext(), newPracticeTime));
@@ -257,6 +236,23 @@ public abstract class PracticeFragment extends Fragment {
                 }
             }
         }, solutionQuality == 5 ? 500 : 1500);
+    }
+
+    private double getNewEasinessFactor(int solutionQuality) {
+        switch (solutionQuality) {
+            case 0:
+                return Math.max(exercise.easinessFactor - 0.45, EASINESS_FACTOR_MIN);
+            case 1:
+                return Math.max(this.exercise.easinessFactor - 0.34, EASINESS_FACTOR_MIN);
+            case 2:
+                return Math.max(this.exercise.easinessFactor - 0.23, EASINESS_FACTOR_MIN);
+            case 3:
+                return Math.max(this.exercise.easinessFactor - 0.12, EASINESS_FACTOR_MIN);
+            case 4:
+                return this.exercise.easinessFactor;
+            default:
+                return this.exercise.easinessFactor + 0.11;
+        }
     }
 
     protected static class UpdateExerciseTask extends AsyncTask<Object, Void, Boolean> {
