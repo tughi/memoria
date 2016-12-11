@@ -18,6 +18,8 @@ import java.util.Locale;
 
 public class PracticeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int PRACTICE_TYPES = 5;
+
     private static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
             Exercises.COLUMN_SCOPE,
@@ -150,7 +152,7 @@ public class PracticeActivity extends AppCompatActivity implements LoaderManager
         args.putParcelable(PracticeFragment.ARG_EXERCISE, practiceExercise);
 
         PracticeFragment practiceFragment;
-        switch (practiceExercise.practiceCount % PracticeFragment.PRACTICE_TYPES) {
+        switch (practiceExercise.practiceCount % PRACTICE_TYPES) {
             case 4:
                 practiceFragment = new AnswerInputFragment();
                 break;

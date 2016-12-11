@@ -23,7 +23,7 @@ public abstract class PracticeFragment extends Fragment {
      */
     public static final String ARG_EXERCISE = "exercise";
 
-    public static final int PRACTICE_TYPES = 5;
+    private static final double EASINESS_FACTOR_MIN = 1.3;
 
     protected static final String[] EXERCISES_PROJECTION = {
             Exercises.COLUMN_ID,
@@ -64,7 +64,48 @@ public abstract class PracticeFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        switch ((int) Math.round(exercise.easinessFactor)) {
+        updateRatingViews(view, exercise.easinessFactor);
+    }
+
+    private void updateRatingViews(View view, double easinessFactor) {
+        view.findViewById(R.id.rating_01).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_02).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_03).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_04).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_05).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_06).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_07).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_08).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_09).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_10).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_11).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_12).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_13).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_14).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_15).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_16).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_17).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_18).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_19).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_20).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_21).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_22).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_23).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_24).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_25).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_26).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_27).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_28).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_29).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_30).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_31).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_32).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_33).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_34).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_35).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.rating_36).setVisibility(View.VISIBLE);
+
+        switch ((int) ((Math.min(easinessFactor, 4) - EASINESS_FACTOR_MIN) * 36 / (4 - EASINESS_FACTOR_MIN))) {
             case 0:
                 view.findViewById(R.id.rating_01).setVisibility(View.INVISIBLE);
             case 1:
@@ -138,7 +179,6 @@ public abstract class PracticeFragment extends Fragment {
             case 35:
                 view.findViewById(R.id.rating_36).setVisibility(View.INVISIBLE);
         }
-
     }
 
     @Override
@@ -174,24 +214,26 @@ public abstract class PracticeFragment extends Fragment {
         final double newEasinessFactor;
         switch (solutionQuality) {
             case 0:
-                newEasinessFactor = Math.max(exercise.easinessFactor - 0.8, 1.3);
+                newEasinessFactor = Math.max(exercise.easinessFactor - 0.45, EASINESS_FACTOR_MIN);
                 break;
             case 1:
-                newEasinessFactor = Math.max(exercise.easinessFactor - 0.54, 1.3);
+                newEasinessFactor = Math.max(exercise.easinessFactor - 0.34, EASINESS_FACTOR_MIN);
                 break;
             case 2:
-                newEasinessFactor = Math.max(exercise.easinessFactor - 0.32, 1.3);
+                newEasinessFactor = Math.max(exercise.easinessFactor - 0.23, EASINESS_FACTOR_MIN);
                 break;
             case 3:
-                newEasinessFactor = Math.max(exercise.easinessFactor - 0.14, 1.3);
+                newEasinessFactor = Math.max(exercise.easinessFactor - 0.12, EASINESS_FACTOR_MIN);
                 break;
             case 4:
-                newEasinessFactor = Math.max(exercise.easinessFactor, 1.3);
+                newEasinessFactor = exercise.easinessFactor;
                 break;
             default:
-                newEasinessFactor = Math.max(exercise.easinessFactor + 0.1, 1.3);
+                newEasinessFactor = exercise.easinessFactor + 0.11;
                 break;
         }
+
+        updateRatingViews(getView(), newEasinessFactor);
 
         final int newPracticeCount = solutionQuality == 0 ? 1 : exercise.practiceCount + 1;
         final long newPracticeInterval = newEasinessFactor < 2.7 ? 3000 : newPracticeCount > 2 ? Math.round(exercise.practiceInterval * newEasinessFactor) : newPracticeCount == 2 ? 30000 : 5000;
